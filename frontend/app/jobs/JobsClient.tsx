@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import JobCard from "@/components/JobCard";
 
 interface Job {
@@ -23,7 +23,7 @@ interface Job {
 
 export default function JobsClient() {
   const router = useRouter();
-  
+  const searchParams = useSearchParams();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +36,15 @@ export default function JobsClient() {
     search: "",
   });
 
+  /* Read URL → Filters */
+  useEffect(() => {
+    setFilters({
+      search: searchParams.get("search") || "",
+      location: searchParams.get("location") || "",
+      category: searchParams.get("category") || "",
+      type: searchParams.get("type") || "",
+    });
+  }, [searchParams]);
 
   /* Fetch jobs */
   useEffect(() => {
