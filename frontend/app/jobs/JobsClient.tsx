@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import JobCard from "@/components/JobCard";
 
 interface Job {
@@ -21,9 +21,12 @@ interface Job {
   };
 }
 
-export default function JobsClient() {
+interface JobsClientProps {
+  searchParams: URLSearchParams;
+}
+
+export default function JobsClient({ searchParams }: JobsClientProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
