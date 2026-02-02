@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"
 import { SearchProvider } from "@/context/SearchContext";
 
 export const metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
         <SearchProvider>
           {children}
         </SearchProvider>
+        <Footer />
       </body>
     </html>
   );

@@ -15,8 +15,8 @@ export default function AboutPage() {
       <div className="mx-auto max-w-7xl px-6">
 
         {/* HEADER */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-semibold text-black mb-4">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-semibold text-black mb-5">
             How It Works
           </h2>
           <p className="text-gray-600 max-w-xl mx-auto">
@@ -25,11 +25,11 @@ export default function AboutPage() {
         </div>
 
         {/* BOTH SECTIONS SIDE BY SIDE */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-9">
 
           {/* JOB SEEKERS */}
           <div className="bg-white rounded-[2.5rem] px-10 py-12 shadow-sm">
-            <h3 className="text-center text-xl font-semibold mb-2">
+            <h3 className="text-center text-gray-500 text-xl font-semibold mb-2">
               For Job Seekers
             </h3>
 
@@ -39,7 +39,7 @@ export default function AboutPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-10 text-center">
+            <div className="grid grid-cols-2 gap-10 text-center text-gray-600">
               <Feature
                 icon={<UserPlus className="h-6 w-6" />}
                 title="Create Your Profile"
@@ -69,7 +69,7 @@ export default function AboutPage() {
 
           {/* EMPLOYERS */}
           <div className="bg-white rounded-[2.5rem] px-10 py-12 shadow-sm">
-            <h3 className="text-center text-xl font-semibold mb-2">
+            <h3 className="text-center text-xl text-gray-500 font-semibold mb-2">
               For Employers
             </h3>
 
@@ -79,7 +79,7 @@ export default function AboutPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-10 text-center">
+            <div className="grid grid-cols-2 gap-10 text-center text-gray-600">
               <Feature
                 icon={<Building2 className="h-6 w-6" />}
                 title="Register Company"

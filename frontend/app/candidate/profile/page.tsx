@@ -278,7 +278,7 @@ export default function CandidateProfilePage() {
                   value={form.phone}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91"
                 />
               </div>
 

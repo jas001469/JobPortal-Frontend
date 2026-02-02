@@ -102,7 +102,7 @@ export default function LoginPage() {
           type="email"
           placeholder="Email Address"
           onChange={handleChange}
-          className="w-full border border-gray-300 focus:border-red-700 focus:ring-1 focus:ring-red-700 px-4 py-3 rounded-xl outline-none"
+          className="w-full border border-gray-300 bg-gray-50 text-gray-800 placeholder-gray-200 focus:border-red-700 focus:ring-2 focus:ring-red-700 px-4 py-3 rounded-xl outline-none transition"
           required
         />
 
@@ -111,7 +111,7 @@ export default function LoginPage() {
           type="password"
           placeholder="Password"
           onChange={handleChange}
-          className="w-full border border-gray-300 focus:border-red-700 focus:ring-1 focus:ring-red-700 px-4 py-3 rounded-xl outline-none"
+          className="w-full border border-gray-300 bg-gray-50 text-gray-800 placeholder-gray-200 focus:border-red-700 focus:ring-2 focus:ring-red-700 px-4 py-3 rounded-xl outline-none transition"
           required
         />
 

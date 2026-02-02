@@ -194,7 +194,7 @@ export default function JobCard({ job }: JobCardProps) {
           View Details →
         </Link>
         
-        {user?.role === "CANDIDATE" && (
+        {/* {user?.role === "CANDIDATE" && (
           <button
             onClick={handleQuickApply}
             disabled={applying}
@@ -202,7 +202,7 @@ export default function JobCard({ job }: JobCardProps) {
           >
             {applying ? "Applying..." : "Quick Apply"}
           </button>
-        )}
+        )} */}
       </div>
     </div>
   );
