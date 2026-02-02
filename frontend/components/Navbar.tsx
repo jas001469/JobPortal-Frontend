@@ -112,7 +112,7 @@ export default function Navbar() {
           <Link href="/" className="hover:text-black">
             Home
           </Link>
-          <Link href="/#about" className="hover:text-black">
+          <Link href="/about" className="hover:text-black">
             About Us
           </Link>
           <Link href="/#jobs" className="hover:text-black">
