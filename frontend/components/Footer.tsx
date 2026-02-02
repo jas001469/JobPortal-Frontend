@@ -103,7 +103,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link 
-                  href="/jobs" 
+                  href="/" 
                   className="text-gray-400 hover:text-white flex items-center transition group"
                 >
                   <ChevronRight size={16} className="mr-2 opacity-0 group-hover:opacity-100 transition" />
