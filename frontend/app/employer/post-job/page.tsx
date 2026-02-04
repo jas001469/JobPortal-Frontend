@@ -52,29 +52,29 @@ export default function JobDetailsPage() {
     fetchUser();
   }, [params.id]);
 
-  const fetchJob = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${params.id}`
-      );
-      const data = await response.json();
+  // const fetchJob = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/jobs/${params.id}`
+  //     );
+  //     const data = await response.json();
 
-      if (data.success) {
-        setJob(data.job);
-        // Debug: Check what data we're receiving
-        console.log("Job Details Data:", data.job);
-        console.log("Deadline from API:", data.job.deadline);
-        console.log("Deadline type:", typeof data.job.deadline);
-      } else {
-        setError("Job not found");
-      }
-    } catch (err) {
-      setError("Failed to fetch job details");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (data.success) {
+  //       setJob(data.job);
+  //       // Debug: Check what data we're receiving
+  //       console.log("Job Details Data:", data.job);
+  //       console.log("Deadline from API:", data.job.deadline);
+  //       console.log("Deadline type:", typeof data.job.deadline);
+  //     } else {
+  //       setError("Job not found");
+  //     }
+  //   } catch (err) {
+  //     setError("Failed to fetch job details");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchUser = async () => {
     try {
