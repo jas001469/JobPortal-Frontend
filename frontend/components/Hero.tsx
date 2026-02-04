@@ -51,7 +51,7 @@ export default function Hero() {
     if (keyword.trim()) params.append("search", keyword);
     if (location.trim()) params.append("location", location);
 
-    router.push(`/jobs?${params.toString()}`);
+    router.push(`/jobs/all-jobs?${params.toString()}`);
   };
 
   return (
