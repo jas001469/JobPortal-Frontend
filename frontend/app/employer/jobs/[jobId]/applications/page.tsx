@@ -45,6 +45,7 @@ export default function EmployerJobApplications() {
   const [error, setError] = useState("");
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAll();
@@ -87,6 +88,11 @@ export default function EmployerJobApplications() {
 
   const handleStatusUpdate = async (applicationId: string, newStatus: string) => {
     try {
+      setUpdatingStatus(applicationId);
+      
+      // Convert to lowercase for API consistency
+      const apiStatus = newStatus.toLowerCase();
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/applications/${applicationId}/status`,
         {
@@ -95,14 +101,14 @@ export default function EmployerJobApplications() {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({ status: apiStatus }),
         }
       );
 
       const data = await response.json();
 
       if (data.success) {
-        // Update local state
+        // Update local state - keep original case for display
         setApplications(applications.map(app =>
           app._id === applicationId ? { ...app, status: newStatus } : app
         ));
@@ -111,36 +117,48 @@ export default function EmployerJobApplications() {
         if (selectedApplication?._id === applicationId) {
           setSelectedApplication({ ...selectedApplication, status: newStatus });
         }
+        
+        // Refresh applications to get updated data
+        fetchAll();
+      } else {
+        alert(data.message || "Failed to update status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
+      alert("An error occurred while updating status");
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
   const filteredApplications = statusFilter === "all" 
     ? applications 
-    : applications.filter(app => app.status === statusFilter);
+    : applications.filter(app => app.status.toLowerCase() === statusFilter);
 
   const statusOptions = [
     { value: "all", label: "All Applications", color: "gray" },
     { value: "pending", label: "Pending", color: "yellow" },
     { value: "reviewed", label: "Reviewed", color: "blue" },
     { value: "shortlisted", label: "Shortlisted", color: "green" },
+    { value: "accepted", label: "Accepted", color: "green" },
     { value: "rejected", label: "Rejected", color: "red" },
   ];
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border border-yellow-200";
       case "reviewed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 border border-blue-200";
       case "shortlisted":
-        return "bg-green-100 text-green-800";
+        return "bg-purple-100 text-purple-800 border border-purple-200";
+      case "accepted":
+        return "bg-green-100 text-green-800 border border-green-200";
       case "rejected":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border border-red-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border border-gray-200";
     }
   };
 
@@ -365,17 +383,24 @@ export default function EmployerJobApplications() {
                           })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <select
-                            value={application.status}
-                            onChange={(e) => handleStatusUpdate(application._id, e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`text-xs font-medium rounded-full px-3 py-1 focus:ring-2 focus:ring-red-500 focus:border-red-500 ${getStatusColor(application.status)}`}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="reviewed">Reviewed</option>
-                            <option value="shortlisted">Shortlisted</option>
-                            <option value="rejected">Rejected</option>
-                          </select>
+                          <div className="flex items-center space-x-2">
+                            <select
+                              value={application.status.toLowerCase()}
+                              onChange={(e) => handleStatusUpdate(application._id, e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              disabled={updatingStatus === application._id}
+                              className={`text-xs font-medium rounded-full px-3 py-1 focus:ring-2 focus:ring-red-500 focus:border-red-500 ${getStatusColor(application.status)} disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="reviewed">Reviewed</option>
+                              <option value="shortlisted">Shortlisted</option>
+                              <option value="accepted">Accepted</option>
+                              <option value="rejected">Rejected</option>
+                            </select>
+                            {updatingStatus === application._id && (
+                              <div className="animate-spin h-4 w-4 border-b-2 border-red-700"></div>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
@@ -449,16 +474,23 @@ export default function EmployerJobApplications() {
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-2">Application Status</h4>
                   <div className="flex items-center space-x-4">
-                    <select
-                      value={selectedApplication.status}
-                      onChange={(e) => handleStatusUpdate(selectedApplication._id, e.target.value)}
-                      className={`text-sm font-medium rounded-full px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 ${getStatusColor(selectedApplication.status)}`}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="reviewed">Reviewed</option>
-                      <option value="shortlisted">Shortlisted</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
+                    <div className="flex items-center space-x-2">
+                      <select
+                        value={selectedApplication.status.toLowerCase()}
+                        onChange={(e) => handleStatusUpdate(selectedApplication._id, e.target.value)}
+                        disabled={updatingStatus === selectedApplication._id}
+                        className={`text-sm font-medium rounded-full px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 ${getStatusColor(selectedApplication.status)} disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="shortlisted">Shortlisted</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                      {updatingStatus === selectedApplication._id && (
+                        <div className="animate-spin h-4 w-4 border-b-2 border-red-700"></div>
+                      )}
+                    </div>
                     <span className="text-sm text-gray-500">
                       Applied {new Date(selectedApplication.appliedAt).toLocaleDateString()}
                     </span>

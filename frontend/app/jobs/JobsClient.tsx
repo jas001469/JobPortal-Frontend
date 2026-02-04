@@ -15,6 +15,10 @@ interface Job {
   description: string;
   experience: string;
   createdAt: string;
+  deadline: string | null;
+  applicationLink?: string;
+  companyWebsite?: string;
+  jobReferenceLink?: string;
   employer: {
     name: string;
     email: string;

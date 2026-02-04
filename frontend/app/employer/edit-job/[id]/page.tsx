@@ -3,51 +3,81 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { 
+  ExternalLink, 
+  Link as LinkIcon, 
+  Globe, 
+  Briefcase, 
+  ChevronRight, 
+  FileText, 
+  List, 
+  Tag, 
+  Calendar 
+} from "lucide-react";
 
 interface JobFormData {
   title: string;
   company: string;
   location: string;
-  type: string;
   salary: string;
+  type: string;
+  category: string;
   description: string;
   requirements: string[];
-  responsibilities: string[];
   skills: string[];
   experience: string;
   education: string;
   deadline: string;
   status: string;
+  applicationLink: string;
+  companyWebsite: string;
+  jobReferenceLink: string;
 }
 
-type ActiveSection = "basic" | "description" | "requirements" | "skills" | "preferences";
+type ActiveTab = "basic" | "details" | "links";
 
 export default function EditJobPage() {
   const router = useRouter();
   const params = useParams();
   const jobId = params.id as string;
 
-  const [formData, setFormData] = useState<JobFormData>({
+  const [form, setForm] = useState<JobFormData>({
     title: "",
     company: "",
     location: "",
-    type: "Full-time",
     salary: "",
+    type: "",
+    category: "",
     description: "",
-    requirements: [""],
-    responsibilities: [""],
-    skills: [""],
-    experience: "",
-    education: "",
+    requirements: [],
+    skills: [],
+    experience: "0-1 years",
+    education: "Any",
     deadline: "",
     status: "Active",
+    applicationLink: "",
+    companyWebsite: "",
+    jobReferenceLink: "",
   });
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [activeSection, setActiveSection] = useState<ActiveSection>("basic");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("basic");
+
+  const [categories] = useState<string[]>([
+    "Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Marketing",
+    "Design",
+    "Sales",
+    "Customer Service",
+    "Operations",
+    "Other",
+  ]);
 
   useEffect(() => {
     fetchJobDetails();
@@ -67,20 +97,23 @@ export default function EditJobPage() {
 
       if (data.success && data.job) {
         const job = data.job;
-        setFormData({
+        setForm({
           title: job.title || "",
           company: job.company || "",
           location: job.location || "",
-          type: job.type || "Full-time",
           salary: job.salary || "",
+          type: job.type || "",
+          category: job.category || "",
           description: job.description || "",
-          requirements: job.requirements?.length ? job.requirements : [""],
-          responsibilities: job.responsibilities?.length ? job.responsibilities : [""],
-          skills: job.skills?.length ? job.skills : [""],
-          experience: job.experience || "",
-          education: job.education || "",
+          requirements: job.requirements || [],
+          skills: job.skills || [],
+          experience: job.experience || "0-1 years",
+          education: job.education || "Any",
           deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : "",
           status: job.status || "Active",
+          applicationLink: job.applicationLink || "",
+          companyWebsite: job.companyWebsite || "",
+          jobReferenceLink: job.jobReferenceLink || "",
         });
       } else {
         setError("Failed to fetch job details");
@@ -93,44 +126,45 @@ export default function EditJobPage() {
     }
   };
 
-  const handleInputChange = (
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setForm((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleArrayFieldChange = (field: keyof JobFormData, index: number, value: string) => {
-    setFormData((prev) => {
-      const newArray = [...(prev[field] as string[])];
-      newArray[index] = value;
-      return {
-        ...prev,
-        [field]: newArray,
-      };
-    });
-  };
-
-  const addArrayField = (field: keyof JobFormData) => {
-    setFormData((prev) => ({
+  const handleRequirementsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const requirements = e.target.value.split("\n").filter(r => r.trim() !== "");
+    setForm((prev) => ({
       ...prev,
-      [field]: [...(prev[field] as string[]), ""],
+      requirements,
     }));
   };
 
-  const removeArrayField = (field: keyof JobFormData, index: number) => {
-    if (formData[field].length <= 1) return;
-    setFormData((prev) => {
-      const newArray = [...(prev[field] as string[])];
-      newArray.splice(index, 1);
-      return {
-        ...prev,
-        [field]: newArray,
-      };
-    });
+  const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const skills = e.target.value.split(",").map(s => s.trim()).filter(s => s !== "");
+    setForm((prev) => ({
+      ...prev,
+      skills,
+    }));
+  };
+
+  const validateUrl = (url: string) => {
+    if (!url) return true; // Empty is valid (optional field)
+    
+    // Basic URL validation
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/;
+    return urlPattern.test(url);
+  };
+
+  const validateCurrentTab = () => {
+    if (activeTab === "basic") {
+      return form.title && form.company && form.location && form.salary;
+    }
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,12 +173,29 @@ export default function EditJobPage() {
     setError("");
     setSuccess("");
 
+    // Validate URLs
+    if (!validateUrl(form.applicationLink)) {
+      setError("Please enter a valid application link URL (e.g., https://example.com/apply)");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!validateUrl(form.companyWebsite)) {
+      setError("Please enter a valid company website URL");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!validateUrl(form.jobReferenceLink)) {
+      setError("Please enter a valid job reference link URL");
+      setSubmitting(false);
+      return;
+    }
+
     try {
-      const filteredFormData = {
-        ...formData,
-        requirements: formData.requirements.filter(req => req.trim() !== ""),
-        responsibilities: formData.responsibilities.filter(resp => resp.trim() !== ""),
-        skills: formData.skills.filter(skill => skill.trim() !== ""),
+      const jobData = {
+        ...form,
+        deadline: form.deadline ? new Date(form.deadline) : null,
       };
 
       const response = await fetch(
@@ -155,7 +206,7 @@ export default function EditJobPage() {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify(filteredFormData),
+          body: JSON.stringify(jobData),
         }
       );
 
@@ -177,677 +228,621 @@ export default function EditJobPage() {
     }
   };
 
-  const sections: { id: ActiveSection; label: string; icon: string }[] = [
-    { id: "basic", label: "Basic Info", icon: "📝" },
-    { id: "description", label: "Description", icon: "📄" },
-    { id: "requirements", label: "Requirements", icon: "✅" },
-    { id: "skills", label: "Skills", icon: "⚡" },
-    { id: "preferences", label: "Preferences", icon: "🎯" },
-  ];
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12 flex justify-center items-center">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-12 flex justify-center items-center">
         <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-red-100 border-t-red-700 mx-auto"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-8 w-8 rounded-full bg-red-700"></div>
-            </div>
-          </div>
-          <p className="mt-6 text-gray-600 text-lg font-medium">Loading job details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading job details...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-24 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+      <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center">
-              <Link
-                href="/employer/dashboard"
-                className="flex items-center text-gray-600 hover:text-red-700 mr-6 group transition-colors"
-              >
-                <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Dashboard
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Edit Job Posting</h1>
-                <p className="text-gray-600 mt-1">Update your job listing details</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                formData.status === "Active" 
-                  ? "bg-green-100 text-green-800" 
-                  : formData.status === "Closed" 
-                  ? "bg-red-100 text-red-800" 
-                  : "bg-yellow-100 text-yellow-800"
-              }`}>
-                {formData.status}
-              </span>
-              <button
-                type="submit"
-                form="job-form"
-                disabled={submitting}
-                className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-medium hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {submitting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Updating...
-                  </>
-                ) : "Update Job"}
-              </button>
-            </div>
+        <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Job Posting</h1>
+            <p className="text-gray-600">Update the details of your job opening</p>
           </div>
 
           {error && (
-            <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg animate-in slide-in-from-left-2">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-red-800">{error}</p>
-                </div>
-              </div>
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+              {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 p-4 mb-6 rounded-r-lg animate-in slide-in-from-left-2">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">{success}</p>
-                  <p className="text-xs text-green-600 mt-1">Redirecting to dashboard...</p>
-                </div>
-              </div>
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+              {success}
             </div>
           )}
-        </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Navigation */}
-          <div className="lg:w-1/4">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sticky top-24">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Sections</h3>
-              <nav className="space-y-1">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                      activeSection === section.id
-                        ? "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-l-4 border-red-500"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="mr-3 text-lg">{section.icon}</span>
-                    {section.label}
-                    {activeSection === section.id && (
-                      <svg className="ml-auto w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </nav>
-              
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="text-xs text-gray-500 mb-2">Quick Actions</div>
-                <div className="space-y-2">
-                  <Link
-                    href="/employer/dashboard"
-                    className="flex items-center text-sm text-gray-600 hover:text-red-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Return to Dashboard
-                  </Link>
-                  <button
-                    type="submit"
-                    form="job-form"
-                    disabled={submitting}
-                    className="w-full flex items-center justify-center text-sm bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2.5 rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {submitting ? "Saving..." : "Save Changes"}
-                  </button>
+          {/* Progress Steps */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  activeTab === "basic" ? "bg-red-700 text-white" : "bg-gray-100 text-gray-600"
+                }`}>
+                  1
                 </div>
+                <span className={`font-medium ${activeTab === "basic" ? "text-red-700" : "text-gray-600"}`}>
+                  Basic Info
+                </span>
               </div>
+              
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+              
+              <div className="flex items-center space-x-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  activeTab === "details" ? "bg-red-700 text-white" : activeTab === "links" ? "bg-red-700 text-white" : "bg-gray-100 text-gray-600"
+                }`}>
+                  2
+                </div>
+                <span className={`font-medium ${
+                  activeTab === "details" || activeTab === "links" ? "text-red-700" : "text-gray-600"
+                }`}>
+                  Job Details
+                </span>
+              </div>
+              
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+              
+              <div className="flex items-center space-x-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  activeTab === "links" ? "bg-red-700 text-white" : "bg-gray-100 text-gray-600"
+                }`}>
+                  3
+                </div>
+                <span className={`font-medium ${activeTab === "links" ? "text-red-700" : "text-gray-600"}`}>
+                  Additional Links
+                </span>
+              </div>
+            </div>
+            
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className={`h-full bg-red-700 transition-all duration-300 ${
+                  activeTab === "basic" ? "w-1/3" : activeTab === "details" ? "w-2/3" : "w-full"
+                }`}
+              ></div>
             </div>
           </div>
 
-          {/* Main Form */}
-          <div className="lg:w-3/4">
-            <form id="job-form" onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              {/* Progress Indicator */}
-              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">{formData.title || "Untitled Job"}</h2>
-                    <p className="text-sm text-gray-600 mt-1">{formData.company}</p>
-                  </div>
-                  <div className="hidden sm:block">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <span className="mr-2">Section:</span>
-                      <span className="font-medium text-gray-900">
-                        {sections.find(s => s.id === activeSection)?.label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Tab Navigation */}
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              type="button"
+              onClick={() => setActiveTab("basic")}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition ${
+                activeTab === "basic"
+                  ? "border-red-700 text-red-700"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Basic Information
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("details")}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition ${
+                activeTab === "details"
+                  ? "border-red-700 text-red-700"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Job Description
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("links")}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition ${
+                activeTab === "links"
+                  ? "border-red-700 text-red-700"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Additional Links
+            </button>
+          </div>
 
-              <div className="p-6">
-                {/* Basic Information Section */}
-                <div className={`space-y-6 ${activeSection !== "basic" ? "hidden" : "block"}`}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Job Title <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="title"
-                          value={formData.title}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          placeholder="e.g., Senior Frontend Developer"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Company <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="company"
-                          value={formData.company}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          placeholder="Your company name"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Location <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          placeholder="e.g., San Francisco, CA or Remote"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Job Type <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          name="type"
-                          value={formData.type}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                        >
-                          <option value="Full-time">Full-time</option>
-                          <option value="Part-time">Part-time</option>
-                          <option value="Contract">Contract</option>
-                          <option value="Internship">Internship</option>
-                          <option value="Remote">Remote</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Salary Range
-                        </label>
-                        <input
-                          type="text"
-                          name="salary"
-                          value={formData.salary}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          placeholder="e.g., $80,000 - $120,000"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Status <span className="text-red-500">*</span>
-                          </label>
-                          <select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          >
-                            <option value="Active">Active</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Draft">Draft</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Deadline
-                          </label>
-                          <input
-                            type="date"
-                            name="deadline"
-                            value={formData.deadline}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("description")}
-                      className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center"
-                    >
-                      Next: Job Description
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Job Description Section */}
-                <div className={`space-y-6 ${activeSection !== "description" ? "hidden" : "block"}`}>
+          {/* Job Editing Form */}
+          <form onSubmit={handleSubmit}>
+            {/* Tab 1: Basic Information */}
+            {activeTab === "basic" && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Job Description <span className="text-red-500">*</span>
+                      Job Title *
                     </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="title"
+                      value={form.title}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      placeholder="e.g., Senior Frontend Developer"
                       required
-                      rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                      placeholder="Describe the role, responsibilities, company culture, and what makes this position exciting..."
                     />
-                    <p className="mt-2 text-sm text-gray-500">
-                      Provide a compelling description to attract the best candidates.
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Institute Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={form.company}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      placeholder="e.g., Google"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Location *
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={form.location}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      placeholder="e.g., Remote, New York, NY"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Salary *
+                    </label>
+                    <input
+                      type="text"
+                      name="salary"
+                      value={form.salary}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      placeholder="e.g., $80,000 - $100,000"
+                      required
+                    />
+                  </div>
+
+                  {/* Job Type - Optional */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Job Type
+                    </label>
+                    <select
+                      name="type"
+                      value={form.type}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    >
+                      <option value="">Select job type (optional)</option>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Internship">Internship</option>
+                      <option value="Remote">Remote</option>
+                    </select>
+                  </div>
+
+                  {/* Category - Optional */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category
+                    </label>
+                    <select
+                      name="category"
+                      value={form.category}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    >
+                      <option value="">Select category (optional)</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Deadline Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                      Application Deadline
+                    </label>
+                    <input
+                      type="date"
+                      name="deadline"
+                      value={form.deadline}
+                      onChange={handleChange}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Optional: Last date to apply for this position
                     </p>
                   </div>
 
-                  <div className="flex justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("basic")}
-                      className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("requirements")}
-                      className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center"
-                    >
-                      Next: Requirements
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Requirements Section */}
-                <div className={`space-y-6 ${activeSection !== "requirements" ? "hidden" : "block"}`}>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-medium text-gray-900">Requirements</h3>
-                        <button
-                          type="button"
-                          onClick={() => addArrayField("requirements")}
-                          className="text-sm text-red-700 hover:text-red-800 font-medium flex items-center"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                          </svg>
-                          Add Requirement
-                        </button>
-                      </div>
-                      <div className="space-y-3">
-                        {formData.requirements.map((requirement, index) => (
-                          <div key={index} className="flex items-center gap-3 group">
-                            <div className="flex-1">
-                              <input
-                                type="text"
-                                value={requirement}
-                                onChange={(e) => handleArrayFieldChange("requirements", index, e.target.value)}
-                                placeholder={`Requirement ${index + 1}`}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeArrayField("requirements", index)}
-                              className="px-3 py-3 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
-                              disabled={formData.requirements.length <= 1}
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-medium text-gray-900">Responsibilities</h3>
-                        <button
-                          type="button"
-                          onClick={() => addArrayField("responsibilities")}
-                          className="text-sm text-red-700 hover:text-red-800 font-medium flex items-center"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                          </svg>
-                          Add Responsibility
-                        </button>
-                      </div>
-                      <div className="space-y-3">
-                        {formData.responsibilities.map((responsibility, index) => (
-                          <div key={index} className="flex items-center gap-3 group">
-                            <div className="flex-1">
-                              <input
-                                type="text"
-                                value={responsibility}
-                                onChange={(e) => handleArrayFieldChange("responsibilities", index, e.target.value)}
-                                placeholder={`Responsibility ${index + 1}`}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeArrayField("responsibilities", index)}
-                              className="px-3 py-3 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
-                              disabled={formData.responsibilities.length <= 1}
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("description")}
-                      className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("skills")}
-                      className="px-5 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center"
-                    >
-                      Next: Skills
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Skills Section */}
-                <div className={`space-y-6 ${activeSection !== "skills" ? "hidden" : "block"}`}>
                   <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">Required Skills</h3>
-                        <p className="text-sm text-gray-500 mt-1">Add technical and soft skills required for this role</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => addArrayField("skills")}
-                        className="text-sm text-red-700 hover:text-red-800 font-medium flex items-center"
-                      >
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Skill
-                      </button>
-                    </div>
-                    <div className="space-y-3">
-                      {formData.skills.map((skill, index) => (
-                        <div key={index} className="flex items-center gap-3 group">
-                          <div className="flex-1">
-                            <input
-                              type="text"
-                              value={skill}
-                              onChange={(e) => handleArrayFieldChange("skills", index, e.target.value)}
-                              placeholder={`Skill ${index + 1} (e.g., React, Communication, Problem-solving)`}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeArrayField("skills", index)}
-                            className="px-3 py-3 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
-                            disabled={formData.skills.length <= 1}
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Experience Required *
+                    </label>
+                    <select
+                      name="experience"
+                      value={form.experience}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      required
+                    >
+                      <option value="0-1 years">0-1 years</option>
+                      <option value="1-3 years">1-3 years</option>
+                      <option value="3-5 years">3-5 years</option>
+                      <option value="5+ years">5+ years</option>
+                    </select>
                   </div>
 
-                  <div className="flex justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("requirements")}
-                      className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center"
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Education Required *
+                    </label>
+                    <select
+                      name="education"
+                      value={form.education}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      required
                     >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("preferences")}
-                      className="px-5 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center"
+                      <option value="Any">Any</option>
+                      <option value="High School">High School</option>
+                      <option value="Associate">Associate</option>
+                      <option value="Bachelor's">Bachelor's</option>
+                      <option value="Master's">Master's</option>
+                      <option value="PhD">PhD</option>
+                    </select>
+                  </div>
+
+                  {/* Status Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Job Status
+                    </label>
+                    <select
+                      name="status"
+                      value={form.status}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
                     >
-                      Next: Preferences
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                      <option value="Active">Active</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Draft">Draft</option>
+                    </select>
                   </div>
                 </div>
 
-                {/* Preferences Section */}
-                <div className={`space-y-6 ${activeSection !== "preferences" ? "hidden" : "block"}`}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Experience Required
-                      </label>
-                      <input
-                        type="text"
-                        name="experience"
-                        value={formData.experience}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                        placeholder="e.g., 3+ years of experience"
-                      />
-                      <p className="mt-2 text-sm text-gray-500">
-                        Specify minimum experience level
-                      </p>
-                    </div>
+                <div className="flex justify-between pt-6 border-t border-gray-200">
+                  <Link
+                    href="/employer/dashboard"
+                    className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+                  >
+                    Cancel
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("details")}
+                    disabled={!validateCurrentTab()}
+                    className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next: Job Description
+                    <ChevronRight className="w-4 h-4 inline ml-2" />
+                  </button>
+                </div>
+              </div>
+            )}
 
+            {/* Tab 2: Job Description - Optional Fields */}
+            {activeTab === "details" && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                  <div className="flex items-start">
+                    <FileText className="h-5 w-5 text-blue-700 mr-3 flex-shrink-0 mt-0.5" />
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Education Required
-                      </label>
-                      <input
-                        type="text"
-                        name="education"
-                        value={formData.education}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                        placeholder="e.g., Bachelor's degree in Computer Science"
-                      />
-                      <p className="mt-2 text-sm text-gray-500">
-                        Educational qualifications needed
+                      <p className="text-blue-800 text-sm">
+                        <span className="font-medium">Note:</span> These fields are optional but recommended for better candidate understanding.
                       </p>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("skills")}
-                      className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
-                    </button>
-                    <div className="flex space-x-3">
-                      <Link
-                        href="/employer/dashboard"
-                        className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                      >
-                        Cancel
-                      </Link>
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="px-5 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                      >
-                        {submitting ? (
-                          <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Updating Job...
-                          </>
-                        ) : "Update Job Posting"}
-                      </button>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Job Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleChange}
+                    rows={5}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    placeholder="Describe the job responsibilities, tasks, and day-to-day activities..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <List className="h-4 w-4 mr-2 text-gray-500" />
+                    Requirements (one per line)
+                  </label>
+                  <textarea
+                    name="requirements"
+                    value={form.requirements.join("\n")}
+                    onChange={handleRequirementsChange}
+                    rows={4}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    placeholder="• 3+ years of experience in React
+• Strong knowledge of JavaScript
+• Experience with Redux or Context API"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Tag className="h-4 w-4 mr-2 text-gray-500" />
+                    Skills Required (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    name="skills"
+                    value={form.skills.join(", ")}
+                    onChange={handleSkillsChange}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    placeholder="e.g., React, JavaScript, Node.js, CSS"
+                  />
+                </div>
+
+                <div className="flex justify-between pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("basic")}
+                    className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+                  >
+                    <ChevronRight className="w-4 h-4 inline mr-2 rotate-180" />
+                    Back to Basic Info
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("links")}
+                    className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition"
+                  >
+                    Next: Additional Links
+                    <ChevronRight className="w-4 h-4 inline ml-2" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 3: Additional Links */}
+            {activeTab === "links" && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                  <div className="flex items-start">
+                    <LinkIcon className="h-5 w-5 text-green-700 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-green-800 text-sm">
+                        <span className="font-medium">Optional but recommended:</span> Adding links helps candidates learn more about your company and increases application rates.
+                      </p>
                     </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Application Link */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <Briefcase className="h-4 w-4 mr-2 text-gray-500" />
+                      Application Link
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        🔗
+                      </div>
+                      <input
+                        type="url"
+                        name="applicationLink"
+                        value={form.applicationLink}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                        placeholder="https://yourcompany.com/apply"
+                      />
+                      {form.applicationLink && (
+                        <a
+                          href={form.applicationLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-700 hover:text-red-800"
+                          title="Open link"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      External application portal URL
+                    </p>
+                  </div>
+
+                  {/* Company Website */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <Globe className="h-4 w-4 mr-2 text-gray-500" />
+                      Institute Website
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        🌐
+                      </div>
+                      <input
+                        type="url"
+                        name="companyWebsite"
+                        value={form.companyWebsite}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                        placeholder="https://yourcompany.com"
+                      />
+                      {form.companyWebsite && (
+                        <a
+                          href={form.companyWebsite}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-700 hover:text-red-800"
+                          title="Open website"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Official Institute Website
+                    </p>
+                  </div>
+
+                  {/* Job Reference Link */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-gray-500" />
+                      Job Reference Link
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        📄
+                      </div>
+                      <input
+                        type="url"
+                        name="jobReferenceLink"
+                        value={form.jobReferenceLink}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                        placeholder="https://drive.google.com/job-description"
+                      />
+                      {form.jobReferenceLink && (
+                        <a
+                          href={form.jobReferenceLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-700 hover:text-red-800"
+                          title="Open reference"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Link to detailed job description or additional resources
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("details")}
+                    className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+                  >
+                    <ChevronRight className="w-4 h-4 inline mr-2 rotate-180" />
+                    Back to Job Description
+                  </button>
+                  <div className="flex space-x-3">
+                    <Link
+                      href="/employer/dashboard"
+                      className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+                    >
+                      Cancel
+                    </Link>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="bg-red-700 text-white px-8 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    >
+                      {submitting ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5 mr-2 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Updating Job...
+                        </>
+                      ) : (
+                        "Update Job"
+                      )}
+                    </button>
                   </div>
                 </div>
               </div>
-            </form>
+            )}
+          </form>
 
-            {/* Mobile Navigation */}
-            <div className="lg:hidden mt-6">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700">Navigate Sections:</span>
-                  <div className="flex space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const sections = ["basic", "description", "requirements", "skills", "preferences"];
-                        const currentIndex = sections.indexOf(activeSection);
-                        if (currentIndex > 0) setActiveSection(sections[currentIndex - 1] as ActiveSection);
-                      }}
-                      className="p-2 text-gray-600 hover:text-red-700"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const sections = ["basic", "description", "requirements", "skills", "preferences"];
-                        const currentIndex = sections.indexOf(activeSection);
-                        if (currentIndex < sections.length - 1) setActiveSection(sections[currentIndex + 1] as ActiveSection);
-                      }}
-                      className="p-2 text-gray-600 hover:text-red-700"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="flex overflow-x-auto pb-2 space-x-2">
-                  {sections.map((section) => (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`shrink-0 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                        activeSection === section.id
-                          ? "bg-red-100 text-red-700"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {section.label}
-                    </button>
-                  ))}
-                </div>
+          {/* Form Summary */}
+          <div className="mt-8 pt-8 border-t border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Summary</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h4 className="font-medium text-gray-900 mb-2">Basic Information</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>Title: {form.title || "Not filled"}</li>
+                  <li>Company: {form.company || "Not filled"}</li>
+                  <li>Location: {form.location || "Not filled"}</li>
+                  <li>Job Type: {form.type || "Optional"}</li>
+                  <li>Category: {form.category || "Optional"}</li>
+                  <li>Deadline: {form.deadline || "Optional"}</li>
+                </ul>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h4 className="font-medium text-gray-900 mb-2">Job Details</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>Description: {form.description ? "✓ Added" : "Optional"}</li>
+                  <li>Requirements: {form.requirements.length > 0 ? "✓ Added" : "Optional"}</li>
+                  <li>Skills: {form.skills.length > 0 ? "✓ Added" : "Optional"}</li>
+                </ul>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h4 className="font-medium text-gray-900 mb-2">Additional Links</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>Application Link: {form.applicationLink ? "✓ Added" : "Optional"}</li>
+                  <li>Website: {form.companyWebsite ? "✓ Added" : "Optional"}</li>
+                  <li>Reference Link: {form.jobReferenceLink ? "✓ Added" : "Optional"}</li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

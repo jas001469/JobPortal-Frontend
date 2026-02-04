@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Calendar } from "lucide-react";
 
 interface JobCardProps {
   job: {
@@ -16,6 +17,10 @@ interface JobCardProps {
     description: string;
     experience: string;
     createdAt: string;
+    deadline: string | null; // Added deadline
+    applicationLink?: string;
+    companyWebsite?: string;
+    jobReferenceLink?: string;
   };
 }
 
@@ -26,7 +31,11 @@ export default function JobCard({ job }: JobCardProps) {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+    // Debug: Check what job data we're receiving
+    console.log("Job Card Data:", job);
+    console.log("Job Deadline:", job.deadline);
+    console.log("Deadline type:", typeof job.deadline);
+  }, [job]);
 
   const fetchUser = async () => {
     try {
@@ -45,72 +54,6 @@ export default function JobCard({ job }: JobCardProps) {
     }
   };
 
-  const handleQuickApply = async (e: React.MouseEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  if (!user) {
-    router.push("/auth/login?redirect=/jobs");
-    return;
-  }
-
-  if (user.role !== "CANDIDATE") {
-    alert("Only candidates can apply for jobs. Please login as a candidate.");
-    return;
-  }
-
-//   // Check if candidate has resume
-//   try {
-//     const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`, {
-//       credentials: "include",
-//     });
-    
-//     if (profileResponse.ok) {
-//       const profileData = await profileResponse.json();
-//       if (!profileData.candidate?.resume) {
-//         if (confirm("You need to upload your resume before applying. Go to your profile now?")) {
-//           router.push("/candidate/profile");
-//         }
-//         return;
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error checking resume:", error);
-//   }
-
-  setApplying(true);
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          coverLetter: `I am interested in the ${job.title} position at ${job.company}. I believe my skills and experience make me a strong candidate for this role.`,
-        }),
-        credentials: "include",
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert("Application submitted successfully!");
-      // Refresh applications
-      if (window.location.pathname === "/candidate/dashboard") {
-        window.location.reload();
-      }
-    } else {
-      alert(data.message || "Failed to apply");
-    }
-  } catch (err) {
-    alert("Something went wrong");
-  } finally {
-    setApplying(false);
-  }
-};
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -118,8 +61,8 @@ export default function JobCard({ job }: JobCardProps) {
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 1) return "Posted today";
-    if (diffDays <= 7) return `Posted ${diffDays} days ago`;
+    if (diffDays === 1) return "Today";
+    if (diffDays <= 7) return `${diffDays}d ago`;
     
     return date.toLocaleDateString("en-US", {
       month: "short",
@@ -127,19 +70,89 @@ export default function JobCard({ job }: JobCardProps) {
     });
   };
 
+  // Format deadline - Fixed to handle null/undefined
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "No deadline";
+    try {
+      const date = new Date(deadline);
+      if (isNaN(date.getTime())) return "Invalid date";
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch (error) {
+      console.error("Error formatting deadline:", error);
+      return "Invalid date";
+    }
+  };
+
+  // Calculate days remaining until deadline - Fixed to handle null/undefined
+  const getDaysRemaining = (deadline: string | null) => {
+    if (!deadline) return null;
+    
+    try {
+      const today = new Date();
+      const deadlineDate = new Date(deadline);
+      
+      // Check if date is valid
+      if (isNaN(deadlineDate.getTime())) return null;
+      
+      const diffTime = deadlineDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) return { text: "Expired", color: "text-red-600", bg: "bg-red-50" };
+      if (diffDays === 0) return { text: "Today", color: "text-orange-600", bg: "bg-orange-50" };
+      if (diffDays <= 3) return { text: `${diffDays}d`, color: "text-orange-600", bg: "bg-orange-50" };
+      if (diffDays <= 7) return { text: `${diffDays}d`, color: "text-yellow-600", bg: "bg-yellow-50" };
+      return { text: `${diffDays}d`, color: "text-green-600", bg: "bg-green-50" };
+    } catch (error) {
+      console.error("Error calculating days remaining:", error);
+      return null;
+    }
+  };
+
+  // Check if job has links
+  const hasLinks = job.applicationLink || job.companyWebsite || job.jobReferenceLink;
+
   // Truncate description
   const truncateDescription = (text: string, maxLength: number) => {
+    if (!text) return "No description provided.";
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + "...";
   };
 
+  // Check if deadline is valid
+  const isValidDeadline = (deadline: string | null) => {
+    if (!deadline) return false;
+    try {
+      const date = new Date(deadline);
+      return !isNaN(date.getTime());
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer border border-gray-100">
-      {/* Job Type Badge */}
+      {/* Job Type Badge and Posted Date */}
       <div className="flex justify-between items-start mb-4">
-        <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
-          {job.type}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
+            {job.type || "Not specified"}
+          </span>
+          {/* Deadline Badge - Only show if deadline exists and is valid */}
+          {isValidDeadline(job.deadline) && (() => {
+            const daysRemaining = getDaysRemaining(job.deadline);
+            if (!daysRemaining) return null;
+            return (
+              <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${daysRemaining.bg} ${daysRemaining.color} flex items-center`}>
+                <Calendar className="h-3 w-3 mr-1" />
+                {daysRemaining.text}
+              </span>
+            );
+          })()}
+        </div>
         <span className="text-sm text-gray-500">{formatDate(job.createdAt)}</span>
       </div>
 
@@ -168,7 +181,28 @@ export default function JobCard({ job }: JobCardProps) {
           </svg>
           <span className="text-sm">{job.salary}</span>
         </div>
+        {/* Deadline Date - Only show if deadline exists and is valid */}
+        {isValidDeadline(job.deadline) && (
+          <div className="flex items-center text-gray-600">
+            <Calendar className="w-4 h-4 mr-1" />
+            <span className="text-sm">
+              Apply by: {formatDeadline(job.deadline)}
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* Links Indicator - Only show if job has links */}
+      {hasLinks && (
+        <div className="mb-4">
+          <span className="inline-flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Has additional links
+          </span>
+        </div>
+      )}
 
       {/* Description Preview */}
       <p className="text-gray-600 text-sm mb-6 line-clamp-2">
@@ -181,7 +215,7 @@ export default function JobCard({ job }: JobCardProps) {
           {job.experience} exp
         </span>
         <span className="inline-block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
-          {job.category}
+          {job.category || "Uncategorized"}
         </span>
       </div>
 
@@ -189,20 +223,13 @@ export default function JobCard({ job }: JobCardProps) {
       <div className="flex justify-between items-center">
         <Link
           href={`/jobs/${job._id}`}
-          className="inline-block text-red-700 font-medium hover:text-red-800 transition"
+          className="inline-block text-red-700 font-medium hover:text-red-800 transition flex items-center"
         >
-          View Details →
+          View Details
+          <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
         </Link>
-        
-        {/* {user?.role === "CANDIDATE" && (
-          <button
-            onClick={handleQuickApply}
-            disabled={applying}
-            className="bg-red-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-800 transition disabled:opacity-50"
-          >
-            {applying ? "Applying..." : "Quick Apply"}
-          </button>
-        )} */}
       </div>
     </div>
   );

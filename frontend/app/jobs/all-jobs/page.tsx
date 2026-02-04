@@ -269,11 +269,18 @@ export default function JobsPage() {
                 className="w-full px-4 py-3 text-gray-800 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent appearance-none cursor-pointer transition-all duration-200"
               >
                 <option value="">All Job Types</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
                 <option value="Internship">Internship</option>
-                <option value="Remote">Remote</option>
-                <option value="Contract">Contract</option>
+                      <option value="Temporary">Temporary</option>
+                      <option value="Consultant">Consultant</option>
+                      <option value="Freelance">Freelance</option>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Deputation">Deputation</option>
+                      <option value="Regular">Regular</option>
+                      <option value="Short-Term Contarct">Short-Term Contract</option>
+                      <option value="Long-Term Contract">Long-Term Contract</option>
+                      <option value="Tenure">Tenure</option>
+                      <option value="Remote">Remote</option>
+                      <option value="Others">Others</option>
               </select>
 
               {/* Search Button */}
