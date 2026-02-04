@@ -48,7 +48,7 @@ export default function JobDetailsPage() {
   const [applySuccess, setApplySuccess] = useState("");
 
   useEffect(() => {
-    fetchJob();
+    //fetchJob();
     fetchUser();
   }, [params.id]);
 
