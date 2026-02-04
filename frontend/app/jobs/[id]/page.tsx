@@ -185,16 +185,16 @@ export default function JobDetailsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-24 pb-12 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading job details...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen pt-24 pb-12 flex justify-center items-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
+  //         <p className="mt-4 text-gray-600">Loading job details...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (error || !job) {
     return (
