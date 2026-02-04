@@ -176,9 +176,7 @@ export default function JobCard({ job }: JobCardProps) {
           <span className="text-sm">{job.location}</span>
         </div>
         <div className="flex items-center text-gray-600">
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v8m-3-4h6m-9 4h12a9 9 0 10-9-9" />
-</svg>
+          <span className="mr-1">₹</span>
           <span className="text-sm">{job.salary}</span>
         </div>
         {/* Deadline Date - Only show if deadline exists and is valid */}
