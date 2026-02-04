@@ -338,7 +338,7 @@ export default function PostJobPage() {
                       value={form.salary}
                       onChange={handleChange}
                       className="w-full border border-gray-300 text-gray-400 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                      placeholder="e.g., $80,000 - $100,000"
+                      placeholder="e.g., ₹80,000 - ₹100,000"
                       required
                     />
                   </div>
