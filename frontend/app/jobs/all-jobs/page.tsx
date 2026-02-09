@@ -1,10 +1,90 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import JobCard from "@/components/JobCard";
-import { Search, MapPin, Briefcase, Filter } from "lucide-react";
+import { Search, MapPin, Briefcase, Filter, X } from "lucide-react";
+
+// Indian locations dataset
+const INDIAN_LOCATIONS = [
+  // Major Cities
+  "Mumbai, Maharashtra",
+  "New Delhi, Delhi",
+  "Delhi, Delhi",
+  "Bangalore, Karnataka",
+  "Hyderabad, Telangana",
+  "Chennai, Tamil Nadu",
+  "Kolkata, West Bengal",
+  "Pune, Maharashtra",
+  "Ahmedabad, Gujarat",
+  "Jaipur, Rajasthan",
+  "Surat, Gujarat",
+  "Lucknow, Uttar Pradesh",
+  "Kanpur, Uttar Pradesh",
+  "Nagpur, Maharashtra",
+  "Indore, Madhya Pradesh",
+  "Thane, Maharashtra",
+  "Bhopal, Madhya Pradesh",
+  "Visakhapatnam, Andhra Pradesh",
+  "Pimpri-Chinchwad, Maharashtra",
+  "Patna, Bihar",
+  "Vadodara, Gujarat",
+  
+  // State Capitals
+  "Chandigarh, Chandigarh",
+  "Bhubaneswar, Odisha",
+  "Guwahati, Assam",
+  "Shimla, Himachal Pradesh",
+  "Dehradun, Uttarakhand",
+  "Ranchi, Jharkhand",
+  "Raipur, Chhattisgarh",
+  "Gandhinagar, Gujarat",
+  "Panaji, Goa",
+  "Port Blair, Andaman and Nicobar",
+  
+  // Educational Hubs
+  "Coimbatore, Tamil Nadu",
+  "Mysore, Karnataka",
+  "Vijayawada, Andhra Pradesh",
+  "Kochi, Kerala",
+  "Kozhikode, Kerala",
+  "Trivandrum, Kerala",
+  "Warangal, Telangana",
+  "Guntur, Andhra Pradesh",
+  "Salem, Tamil Nadu",
+  "Tiruchirappalli, Tamil Nadu",
+  
+  // Other Important Cities
+  "Noida, Uttar Pradesh",
+  "Gurgaon, Haryana",
+  "Faridabad, Haryana",
+  "Ghaziabad, Uttar Pradesh",
+  "Ludhiana, Punjab",
+  "Amritsar, Punjab",
+  "Nashik, Maharashtra",
+  "Aurangabad, Maharashtra",
+  "Rajkot, Gujarat",
+  "Jammu, Jammu and Kashmir",
+  
+  // States
+  "Maharashtra",
+  "Karnataka",
+  "Tamil Nadu",
+  "Uttar Pradesh",
+  "Gujarat",
+  "Rajasthan",
+  "West Bengal",
+  "Kerala",
+  "Telangana",
+  "Andhra Pradesh",
+  "Madhya Pradesh",
+  "Punjab",
+  "Haryana",
+  "Bihar",
+  "Odisha",
+  "Assam",
+];
 
 interface Job {
   _id: string;
@@ -47,6 +127,14 @@ export default function JobsPage() {
     search: "",
     location: "",
   });
+
+  // Auto-complete states
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  
+  const locationInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   /* -----------------------------
      1️⃣ Read URL → Filters
@@ -124,10 +212,129 @@ export default function JobsPage() {
   ------------------------------*/
   const updateTempFilter = (key: string, value: string) => {
     setTempFilters(prev => ({ ...prev, [key]: value }));
+    
+    // Handle location suggestions
+    if (key === "location") {
+      setActiveSuggestionIndex(-1);
+      
+      if (value.trim().length > 1) {
+        const filtered = INDIAN_LOCATIONS.filter((loc) =>
+          loc.toLowerCase().includes(value.toLowerCase())
+        ).slice(0, 6); // Show only top 6 suggestions
+        setLocationSuggestions(filtered);
+        setShowLocationSuggestions(true);
+      } else {
+        setLocationSuggestions([]);
+        setShowLocationSuggestions(false);
+      }
+    }
   };
 
   /* -----------------------------
-     5️⃣ Apply filters immediately for select inputs
+     5️⃣ Handle location suggestion selection
+  ------------------------------*/
+  const handleLocationSuggestionClick = (suggestion: string) => {
+    setTempFilters(prev => ({ ...prev, location: suggestion }));
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
+    setActiveSuggestionIndex(-1);
+    
+    // Apply filter immediately when suggestion is selected
+    const newFilters = {
+      ...filters,
+      location: suggestion,
+    };
+    setFilters(newFilters);
+
+    const params = new URLSearchParams();
+    Object.entries(newFilters).forEach(([k, v]) => {
+      if (v) {
+        params.append(k, v);
+      }
+    });
+    
+    router.push(`/jobs/all-jobs?${params.toString()}`);
+  };
+
+  /* -----------------------------
+     6️⃣ Clear location input
+  ------------------------------*/
+  const handleClearLocation = () => {
+    setTempFilters(prev => ({ ...prev, location: "" }));
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
+    setActiveSuggestionIndex(-1);
+    
+    // Remove location filter
+    const newFilters = { ...filters, location: "" };
+    setFilters(newFilters);
+
+    const params = new URLSearchParams();
+    Object.entries(newFilters).forEach(([k, v]) => {
+      if (v) {
+        params.append(k, v);
+      }
+    });
+    
+    router.push(`/jobs/all-jobs?${params.toString()}`);
+    locationInputRef.current?.focus();
+  };
+
+  /* -----------------------------
+     7️⃣ Click outside to close suggestions
+  ------------------------------*/
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        locationInputRef.current &&
+        !locationInputRef.current.contains(event.target as Node)
+      ) {
+        setShowLocationSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  /* -----------------------------
+     8️⃣ Keyboard navigation for suggestions
+  ------------------------------*/
+  const handleLocationKeyDown = (e: React.KeyboardEvent) => {
+    if (!showLocationSuggestions || locationSuggestions.length === 0) return;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setActiveSuggestionIndex((prev) =>
+          prev < locationSuggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setActiveSuggestionIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (activeSuggestionIndex >= 0 && activeSuggestionIndex < locationSuggestions.length) {
+          handleLocationSuggestionClick(locationSuggestions[activeSuggestionIndex]);
+        } else {
+          handleSearch(e);
+        }
+        break;
+      case "Escape":
+        setShowLocationSuggestions(false);
+        setActiveSuggestionIndex(-1);
+        break;
+    }
+  };
+
+  /* -----------------------------
+     9️⃣ Apply filters immediately for select inputs
   ------------------------------*/
   const updateFilter = (key: string, value: string) => {
     const newFilters = { ...filters, [key]: value };
@@ -144,10 +351,11 @@ export default function JobsPage() {
   };
 
   /* -----------------------------
-     6️⃣ Search submit (for search and location inputs)
+     🔟 Search submit (for search and location inputs)
   ------------------------------*/
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowLocationSuggestions(false);
     
     const newFilters = {
       ...filters,
@@ -168,14 +376,20 @@ export default function JobsPage() {
   };
 
   /* -----------------------------
-     7️⃣ Handle Enter key in search inputs
+     1️⃣1️⃣ Handle Enter key in search inputs
   ------------------------------*/
   const handleKeyDown = (e: React.KeyboardEvent, field: 'search' | 'location') => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      setShowLocationSuggestions(false);
       handleSearch(e);
     }
   };
+
+  /* -----------------------------
+     1️⃣2️⃣ Quick location tags
+  ------------------------------*/
+  const popularLocations = ["Delhi", "Bangalore", "Mumbai", "Hyderabad", "Pune", "Chennai"];
 
   /* -----------------------------
      UI
@@ -228,18 +442,70 @@ export default function JobsPage() {
 
             {/* Filters Row */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Location */}
+              {/* Location with Autocomplete */}
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   <MapPin className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  ref={locationInputRef}
                   value={tempFilters.location}
                   onChange={(e) => updateTempFilter("location", e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, 'location')}
-                  placeholder="City or country"
-                  className="w-full pl-12 pr-4 py-3 text-gray-800 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  onKeyDown={(e) => {
+                    handleLocationKeyDown(e);
+                    if (e.key === 'Enter' && activeSuggestionIndex === -1) {
+                      handleKeyDown(e, 'location');
+                    }
+                  }}
+                  onFocus={() => {
+                    if (tempFilters.location.trim().length > 1 && locationSuggestions.length > 0) {
+                      setShowLocationSuggestions(true);
+                    }
+                  }}
+                  placeholder="City or state"
+                  className="w-full pl-12 pr-10 py-3 text-gray-800 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 relative z-0"
                 />
+                
+                {/* Clear location button */}
+                {tempFilters.location && (
+                  <button
+                    type="button"
+                    onClick={handleClearLocation}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition z-20"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+
+                {/* Suggestions Dropdown */}
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
+                  <div
+                    ref={suggestionsRef}
+                    className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-60 overflow-y-auto"
+                  >
+                    <div className="p-2">
+                      <p className="text-xs font-medium text-gray-500 px-3 py-2">
+                        Popular Locations
+                      </p>
+                      {locationSuggestions.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleLocationSuggestionClick(suggestion)}
+                          className={`w-full text-left px-4 py-3 hover:bg-red-50 transition-colors rounded-md flex items-center gap-2 ${
+                            index === activeSuggestionIndex
+                              ? "bg-red-50 text-red-700"
+                              : "text-gray-700"
+                          }`}
+                          onMouseEnter={() => setActiveSuggestionIndex(index)}
+                        >
+                          <MapPin className="h-4 w-4 text-red-600" />
+                          <span className="text-sm">{suggestion}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Category */}
@@ -270,17 +536,17 @@ export default function JobsPage() {
               >
                 <option value="">All Job Types</option>
                 <option value="Internship">Internship</option>
-                      <option value="Temporary">Temporary</option>
-                      <option value="Consultant">Consultant</option>
-                      <option value="Freelance">Freelance</option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Deputation">Deputation</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Short-Term Contarct">Short-Term Contract</option>
-                      <option value="Long-Term Contract">Long-Term Contract</option>
-                      <option value="Tenure">Tenure</option>
-                      <option value="Remote">Remote</option>
-                      <option value="Others">Others</option>
+                <option value="Temporary">Temporary</option>
+                <option value="Consultant">Consultant</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Deputation">Deputation</option>
+                <option value="Regular">Regular</option>
+                <option value="Short-Term Contract">Short-Term Contract</option>
+                <option value="Long-Term Contract">Long-Term Contract</option>
+                <option value="Tenure">Tenure</option>
+                <option value="Remote">Remote</option>
+                <option value="Others">Others</option>
               </select>
 
               {/* Search Button */}
@@ -292,6 +558,21 @@ export default function JobsPage() {
               </button>
             </div>
           </form>
+
+          {/* Quick Location Tags */}
+          {/* <div className="mt-4 flex flex-wrap gap-2">
+            <span className="text-xs text-gray-500">Try:</span>
+            {popularLocations.map((city) => (
+              <button
+                key={city}
+                type="button"
+                onClick={() => handleLocationSuggestionClick(city)}
+                className="text-xs bg-white px-3 py-1.5 rounded-full border border-gray-300 hover:border-red-600 hover:text-red-700 transition-colors"
+              >
+                {city}
+              </button>
+            ))}
+          </div> */}
 
           {/* Active Filters */}
           {(filters.search || filters.location || filters.category || filters.type) && (
@@ -305,6 +586,7 @@ export default function JobsPage() {
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-sm font-medium">
                     Search: {filters.search}
                     <button
+                      type="button"
                       onClick={() => updateFilter("search", "")}
                       className="hover:text-red-900"
                     >
@@ -316,6 +598,7 @@ export default function JobsPage() {
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                     Location: {filters.location}
                     <button
+                      type="button"
                       onClick={() => updateFilter("location", "")}
                       className="hover:text-blue-900"
                     >
@@ -327,6 +610,7 @@ export default function JobsPage() {
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium">
                     {filters.category}
                     <button
+                      type="button"
                       onClick={() => updateFilter("category", "")}
                       className="hover:text-green-900"
                     >
@@ -338,6 +622,7 @@ export default function JobsPage() {
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-sm font-medium">
                     {filters.type}
                     <button
+                      type="button"
                       onClick={() => updateFilter("type", "")}
                       className="hover:text-purple-900"
                     >
@@ -390,6 +675,7 @@ export default function JobsPage() {
               We couldn't find any jobs matching your criteria. Try adjusting your filters or search terms.
             </p>
             <button
+              type="button"
               onClick={() => {
                 setFilters({ search: "", location: "", category: "", type: "" });
                 setTempFilters({ search: "", location: "" });
@@ -414,8 +700,13 @@ export default function JobsPage() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
 
-        {/* Quick Stats Footer */}
+
+{/* Quick Stats Footer */}
         {/* {jobs.length > 0 && (
           <div className="mt-12 pt-8 border-t border-gray-200">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -444,7 +735,3 @@ export default function JobsPage() {
             </div>
           </div>
         )} */}
-      </div>
-    </div>
-  );
-}
