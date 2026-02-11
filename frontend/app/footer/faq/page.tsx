@@ -175,20 +175,42 @@ export default function FAQPage() {
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-full mb-6">
-            <HelpCircle className="h-8 w-8 text-red-700" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-gray-600 max-w-3xl mx-auto">
-            Find quick answers to common questions about using EdTrellis. Can't find what you're looking for? 
-            <a href="/footer/contact" className="text-red-700 font-medium hover:underline ml-1">
-              Contact our support team
-            </a>
-          </p>
-        </div>
+       <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-30 mb-16">
+
+  {/* LEFT SIDE - TEXT */}
+  <div>
+    <div className="inline-flex items-center justify-center w-18 h-18 bg-red-50 rounded-full mb-6">
+      <HelpCircle className="h-10 w-10 text-red-700" />
+    </div>
+
+    <h1 className="text-6xl font-bold text-gray-900 mb-4">
+      Frequently Asked Questions
+    </h1>
+
+    <p className="text-gray-600 max-w-xl">
+      Find quick answers to common questions about using EdTrellis. 
+      Can't find what you're looking for?
+      <a
+        href="/footer/contact"
+        className="text-red-700 font-medium hover:underline ml-1"
+      >
+        Contact our support team
+      </a>
+    </p>
+  </div>
+
+  {/* RIGHT SIDE - IMAGE */}
+ <div className="flex justify-center">
+  <div className="w-95 h-95 rounded-full overflow-hidden shadow-lg">
+    <img
+      src="/photo2.JPG"
+      alt="Education illustration"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+</div>
+
 
         {/* Search Bar */}
         <div className="mb-10">

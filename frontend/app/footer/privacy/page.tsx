@@ -22,21 +22,41 @@ export default function PrivacyPage() {
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-6">
-            <Shield className="h-8 w-8 text-blue-700" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Privacy Policy
-          </h1>
-          <p className="text-gray-600 max-w-3xl mx-auto">
-            Last updated: {new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </p>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 mb-16">
+
+  {/* LEFT SIDE - TEXT */}
+  <div>
+    <div className="inline-flex items-center justify-center w-18 h-18 bg-blue-50 rounded-full mb-6">
+      <Shield className="h-10 w-10 text-blue-700" />
+    </div>
+
+    <h1 className="text-6xl font-bold text-gray-900 mb-4">
+      Privacy Policy
+    </h1>
+
+    <p className="text-gray-600 max-w-xl">
+      Last updated:{" "}
+      {new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}
+    </p>
+  </div>
+
+  {/* RIGHT SIDE - IMAGE */}
+   <div className="flex justify-center">
+  <div className="w-85 h-85 rounded-full overflow-hidden shadow-lg">
+    <img
+      src="/photo6.JPG"
+      alt="Education illustration"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
+</div>
+
 
         {/* Introduction Card */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-10">

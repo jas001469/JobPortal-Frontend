@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Users, Target, Shield, Globe, Award, Lightbulb, ChevronRight, Briefcase, GraduationCap, Building } from "lucide-react";
 import Link from "next/link";
 
+
 export default function AboutUsPage() {
   const [activeTab, setActiveTab] = useState("mission");
 
@@ -61,24 +62,46 @@ export default function AboutUsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20 md:pt-32 md:pb-28">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 to-blue-600/10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="bg-red-100 rounded-full p-4">
-                <GraduationCap className="h-12 w-12 text-red-700" />
-              </div>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              About <span className="text-red-700">EdTrellis</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Connecting academic excellence with opportunity. The first and only job portal exclusively built for the education sector.
-            </p>
+      <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
+  {/* Background Gradient */}
+  <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 to-blue-600/10" />
+
+  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+      
+      {/* LEFT SIDE - TEXT */}
+      <div>
+        <div className="flex items-center mb-6">
+          <div className="bg-red-100 rounded-full p-4">
+            <GraduationCap className="h-15 w-15 text-red-700" />
           </div>
         </div>
-      </section>
+
+        <h1 className="text-4xl md:text-7xl font-bold text-gray-900 mb-6">
+          About <span className="text-red-700">EdTrellis</span>
+        </h1>
+
+        <p className="text-lg text-gray-600 leading-relaxed">
+          Connecting academic excellence with opportunity.
+          The first and only job portal exclusively built for the education sector.
+        </p>
+      </div>
+
+      {/* RIGHT SIDE - IMAGE SPACE */}
+      <div className="flex justify-center">
+  <div className="w-95 h-95 rounded-full overflow-hidden shadow-lg">
+    <img
+      src="/photo.JPG"
+      alt="Education illustration"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
+    </div>
+  </div>
+</section>
+
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 pb-20">

@@ -408,15 +408,33 @@ export default function JobsPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-28 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Find Your <span className="text-red-600">Dream Job</span>
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover thousands of job opportunities with all the information you need. 
-            It's your future, come find it.
-          </p>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-50 mb-10">
+
+  {/* LEFT SIDE - TEXT */}
+  <div>
+    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+      Find Your <span className="text-red-600">Dream Job</span>
+    </h1>
+
+    <p className="text-lg text-gray-600 max-w-xl">
+      Discover thousands of job opportunities with all the information you need. 
+      It's your future, come find it.
+    </p>
+  </div>
+
+  {/* RIGHT SIDE - IMAGE */}
+  <div className="flex justify-center">
+  <div className="w-80 h-80 rounded-full overflow-hidden shadow-lg">
+    <img
+      src="/photo4.JPG"
+      alt="Education illustration"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
+</div>
+
 
         {/* Search & Filter Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-10 border border-gray-100">
