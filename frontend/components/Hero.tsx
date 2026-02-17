@@ -238,8 +238,7 @@ export default function Hero() {
               <span className="text-red-700"> EdTrellis</span>
             </h1>
             <p className="text-gray-600 mb-10 max-w-md">
-              Create trackable resumes and enrich your applications for
-              educational, research or training institutes!
+              Find a job in educational, research or training institutes on a single platform!
             </p>
 
             {/* SEARCH BAR */}

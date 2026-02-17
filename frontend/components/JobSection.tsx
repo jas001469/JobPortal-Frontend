@@ -64,8 +64,7 @@ export default function JobsSection() {
             Latest Job Opportunities
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Browse through our curated list of job openings from top companies. 
-            Find the perfect match for your skills and career aspirations.
+            Browse through our curated list of job openings from top institutes.
           </p>
         </div>
 

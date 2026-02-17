@@ -54,13 +54,13 @@ export default function AboutPage() {
               />
               <Feature
                 icon={<CheckCircle className="h-6 w-6" />}
-                title="Apply Quickly"
+                title="Applying Made Easy "
                 desc="Submit applications with just a few clicks, no lengthy forms."
                 
               />
               <Feature
                 icon={<Briefcase className="h-6 w-6" />}
-                title="Start Working"
+                title="Get Noticed "
                 desc="Get hired and begin earning with essential service roles."
                 
               />
@@ -82,8 +82,8 @@ export default function AboutPage() {
             <div className="grid grid-cols-2 gap-10 text-center text-gray-600">
               <Feature
                 icon={<Building2 className="h-6 w-6" />}
-                title="Register Company"
-                desc="Create your employer account with company details and requirements."
+                title="Register Institute"
+                desc="Create employer account with Institute details"
               />
               <Feature
                 icon={<FileText className="h-6 w-6" />}
@@ -97,8 +97,8 @@ export default function AboutPage() {
               />
               <Feature
                 icon={<Users className="h-6 w-6" />}
-                title="Hire Quality Workers"
-                desc="Select qualified candidates and build your workforce."
+                title="Hire Quality Talent"
+                desc="Hire eligible candidates and enrich your workforce."
               />
             </div>
           </div>
