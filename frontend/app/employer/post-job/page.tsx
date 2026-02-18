@@ -803,7 +803,7 @@ export default function PostJobPage() {
                         value={form.applicationLink}
                         onChange={handleChange}
                         className="w-full border text-gray-900 border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                        placeholder="https://yourcompany.com/apply"
+                        placeholder="https://yourinstitute.edu.in"
                       />
                       {form.applicationLink && (
                         <a
@@ -835,7 +835,7 @@ export default function PostJobPage() {
                         value={form.companyWebsite}
                         onChange={handleChange}
                         className="w-full border text-gray-900 border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                        placeholder="https://yourinstitute.com"
+                        placeholder="https://yourinstitute.edu.in/careers"
                       />
                       {form.companyWebsite && (
                         <a
@@ -867,7 +867,7 @@ export default function PostJobPage() {
                         value={form.jobReferenceLink}
                         onChange={handleChange}
                         className="w-full border text-gray-900 border-gray-300 rounded-xl pl-10 pr-10 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                        placeholder="https://drive.google.com/job-description"
+                        placeholder="https://yourinstitute.edu.in/careers/application"
                       />
                       {form.jobReferenceLink && (
                         <a
