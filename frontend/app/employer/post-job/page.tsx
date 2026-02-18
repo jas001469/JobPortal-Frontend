@@ -84,6 +84,48 @@ const INDIAN_LOCATIONS = [
   "Assam",
 ];
 
+// Job categories data based on provided list
+const JOB_CATEGORIES = [
+  // Main categories and their subcategories
+  { category: "ACADEMIC ADMINISTRATION", subcategories: ["Vice-Chancellor", "Pro-VC", "Registrar", "Principal", "Dean", "Deputy Registrar", "Assistant Registrar", "Director", "Campus Director", "Joint Director", "Assistant Director"] },
+  { category: "ADMISSION", subcategories: ["Counsellor"] },
+  { category: "AUDIT", subcategories: [] },
+  { category: "ADMINISTRATION", subcategories: ["Chief Administrative Officer", "House Keeping"] },
+  { category: "ENGINEERING", subcategories: ["Chief Engineer", "Executive Engineer", "Assistant Engineer", "Junior Engineer"] },
+  { category: "ESTABLISHMENT", subcategories: [] },
+  { category: "ESTATE", subcategories: ["Estate Officer"] },
+  { category: "EXAMINATION", subcategories: ["Controller Of Examination"] },
+  { category: "FINANCE and ACCOUNTS", subcategories: ["Finance Officer", "Director Finance & Accounts", "Accounts officer", "Assistant Accounts Officer"] },
+  { category: "GUEST HOUSE", subcategories: ["Receptionist", "Cook", "Care Taker", "Manager"] },
+  { category: "HOSTEL", subcategories: ["Assistant Hostel Warden", "Hostel Warden", "Chief Hostel Warden"] },
+  { category: "LIBRARY", subcategories: ["Librarian", "Assistant Librarian"] },
+  { category: "INFORMATION TECHNOLOGY", subcategories: ["System Administrator", "System Analyst", "MIS Coordinator", "Computer Engineer"] },
+  { category: "LEGAL", subcategories: ["Adviser", "Law Officer"] },
+  { category: "PLANNING AND DEVELOPMENT", subcategories: [] },
+  { category: "PUBLIC RELATIONS", subcategories: [] },
+  { category: "RESEARCH", subcategories: [] },
+  { category: "STUDENT AFFAIRS", subcategories: ["Proctor", "Dean Student Welfare"] },
+  { category: "SECURITY", subcategories: ["Chief Security Officer", "Security Officer", "Assistant Security Officer", "Security Assistant", "Watch & Ward Assistant", "Gunman", "Security Guard"] },
+  { category: "TRAINING AND PLACEMENT", subcategories: ["Training and Placement Officer", "Head Training and Placement"] },
+  { category: "TRANSPORT", subcategories: ["Transport Manager", "Driver"] },
+  { category: "VIGILANCE", subcategories: ["Chief Vigilance Officer", "Deputy Vigilance Officer"] },
+  { category: "IQAC", subcategories: [] },
+  { category: "MULTI-TASKING", subcategories: [] },
+  { category: "MEDICAL", subcategories: ["Medical Officer", "Nurse"] },
+  { category: "PURCHASE", subcategories: ["Purchase Officer"] },
+  { category: "STORE", subcategories: ["Store Keeper"] },
+  { category: "TRANSLATOR", subcategories: ["Translator"] },
+  { category: "TEACHING/ACADEMIC", subcategories: ["Assistant Professor", "Associate Professor", "Professor", "Guest Faculty", "Adjunct Faculty", "Professor Emeritus", "Professor of Practice", "Lecturer", "TGT", "PGT", "NTT", "Research Assistant", "Junior Assistant", "Teaching Assistant"] },
+  { category: "LABORATORY", subcategories: ["Lab Engineer", "Lab Assistant"] },
+];
+
+// Flatten all categories for the dropdown
+const ALL_CATEGORIES = JOB_CATEGORIES.flatMap(item => 
+  item.subcategories.length > 0 
+    ? [`${item.category} - ${item.subcategories.join(', ')}`, ...item.subcategories.map(sub => `${item.category} - ${sub}`)]
+    : [item.category]
+).sort();
+
 export default function PostJobPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -92,23 +134,14 @@ export default function PostJobPage() {
   const [activeTab, setActiveTab] = useState<"basic" | "details" | "links">("basic");
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+  const [categorySuggestions, setCategorySuggestions] = useState<string[]>([]);
   
-  // Refs for location autocomplete
+  // Refs for autocomplete
   const locationInputRef = useRef<HTMLInputElement>(null);
+  const categoryInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  
-  const [categories, setCategories] = useState<string[]>([
-    "Technology",
-    "Healthcare",
-    "Finance",
-    "Education",
-    "Marketing",
-    "Design",
-    "Sales",
-    "Customer Service",
-    "Operations",
-    "Other",
-  ]);
+  const categorySuggestionsRef = useRef<HTMLDivElement>(null);
 
   // Initialize form with empty optional fields and job deadline
   const [form, setForm] = useState({
@@ -157,6 +190,7 @@ export default function PostJobPage() {
   // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Location suggestions
       if (
         suggestionsRef.current && 
         !suggestionsRef.current.contains(event.target as Node) &&
@@ -164,6 +198,16 @@ export default function PostJobPage() {
         !locationInputRef.current.contains(event.target as Node)
       ) {
         setShowLocationSuggestions(false);
+      }
+      
+      // Category suggestions
+      if (
+        categorySuggestionsRef.current && 
+        !categorySuggestionsRef.current.contains(event.target as Node) &&
+        categoryInputRef.current &&
+        !categoryInputRef.current.contains(event.target as Node)
+      ) {
+        setShowCategorySuggestions(false);
       }
     };
 
@@ -199,6 +243,35 @@ export default function PostJobPage() {
     // Keep focus on input after selection
     if (locationInputRef.current) {
       locationInputRef.current.focus();
+    }
+  };
+
+  // Handle category input with autocomplete
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setForm({ ...form, category: value });
+    
+    // Filter category suggestions
+    if (value.length > 0) {
+      const filtered = ALL_CATEGORIES.filter(category =>
+        category.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 15); // Limit to 15 suggestions
+      setCategorySuggestions(filtered);
+      setShowCategorySuggestions(true);
+    } else {
+      setCategorySuggestions([]);
+      setShowCategorySuggestions(false);
+    }
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setForm({ ...form, category });
+    setShowCategorySuggestions(false);
+    setCategorySuggestions([]);
+    
+    // Keep focus on input after selection
+    if (categoryInputRef.current) {
+      categoryInputRef.current.focus();
     }
   };
 
@@ -517,9 +590,9 @@ export default function PostJobPage() {
                       name="type"
                       value={form.type}
                       onChange={handleChange}
-                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      className="w-full border text-gray-400 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
                     >
-                      <option value="">Select job type (optional)</option>
+                      <option value="">Select job type</option>
                       <option value="Internship">Internship</option>
                       <option value="Temporary">Temporary</option>
                       <option value="Consultant">Consultant</option>
@@ -527,7 +600,7 @@ export default function PostJobPage() {
                       <option value="Full-time">Full-time</option>
                       <option value="Deputation">Deputation</option>
                       <option value="Regular">Regular</option>
-                      <option value="Short-Term Contarct">Short-Term Contract</option>
+                      <option value="Short-Term Contract">Short-Term Contract</option>
                       <option value="Long-Term Contract">Long-Term Contract</option>
                       <option value="Tenure">Tenure</option>
                       <option value="Remote">Remote</option>
@@ -535,30 +608,58 @@ export default function PostJobPage() {
                     </select>
                   </div>
 
-                  {/* Category - Now Optional */}
-                  <div>
+                  {/* Category - Now Optional with Autocomplete */}
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Category
                     </label>
-                    <select
-                      name="category"
-                      value={form.category}
-                      onChange={handleChange}
-                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    >
-                      <option value="">Select category (optional)</option>
-                      {categories.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        ref={categoryInputRef}
+                        type="text"
+                        name="category"
+                        value={form.category}
+                        onChange={handleCategoryChange}
+                        onFocus={() => {
+                          if (form.category.length > 0 && categorySuggestions.length > 0) {
+                            setShowCategorySuggestions(true);
+                          }
+                        }}
+                        className="w-full border text-gray-900 border-gray-300 rounded-xl pl-10 pr-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                        placeholder="Type to search categories..."
+                        autoComplete="off"
+                      />
+                    </div>
+                    {/* <p className="text-xs text-gray-500 mt-1">
+                      Optional: Start typing to search from 30+ categories
+                    </p> */}
+                    
+                    {/* Category Autocomplete Suggestions */}
+                    {showCategorySuggestions && categorySuggestions.length > 0 && (
+                      <div 
+                        ref={categorySuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+                      >
+                        {categorySuggestions.map((category, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleCategorySelect(category)}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none flex items-center space-x-2 cursor-pointer"
+                          >
+                            <Briefcase className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-900">{category}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* New Deadline Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2 flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                      <Calendar className="h-4 w-4 mr-2 text-gray-400" />
                       Application Deadline
                     </label>
                     <input
@@ -567,11 +668,11 @@ export default function PostJobPage() {
                       value={form.deadline}
                       onChange={handleChange}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      className="w-full border text-gray-400 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    {/* <p className="text-xs text-gray-500 mt-1">
                       Optional: Last date to apply for this position
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
