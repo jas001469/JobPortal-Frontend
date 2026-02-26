@@ -221,7 +221,7 @@ export default function Hero() {
           <div className="md:mt-10">
             <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-black mb-6">
               <span className="inline-flex items-center gap-4">
-                Find Jobs in{" "}
+                 Jobs in the{" "}
                 <a
                   href="#about"
                   className="inline-flex items-center justify-center h-10 w-36 rounded-full border-2 border-red-700 hover:bg-red-700 transition group"
@@ -233,7 +233,7 @@ export default function Hero() {
                 </a>
               </span>
               <br />
-              education sector through
+              Education Sector 
               <br />
               <span className="text-red-700"> EdTrellis</span>
             </h1>

@@ -343,7 +343,7 @@ export default function CandidateDashboard() {
             <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <Link
-                href="/jobs"
+                href="/jobs/all-jobs"
                 className="flex items-center p-3 rounded-lg border border-gray-200 hover:border-red-200 hover:bg-red-50 transition"
               >
                 <svg className="w-5 h-5 text-red-700 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

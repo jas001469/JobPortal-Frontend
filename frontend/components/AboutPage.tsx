@@ -19,7 +19,7 @@ export default function AboutUsPage() {
     {
       icon: <Target className="h-10 w-10 text-red-700" />,
       title: "Our Mission",
-      description: "To revolutionize education sector recruitment by creating transparent, efficient connections between academic professionals and institutions.",
+      description: "To revolutionise education sector recruitment by creating transparent, efficient connections between academic professionals and institutions.",
     },
     {
       icon: <Lightbulb className="h-10 w-10 text-red-700" />,
@@ -34,7 +34,7 @@ export default function AboutUsPage() {
     {
       icon: <Award className="h-10 w-10 text-red-700" />,
       title: "Excellence",
-      description: "Dedicated exclusively to education sector recruitment, ensuring specialized expertise and tailored solutions.",
+      description: "Dedicated exclusively to education sector recruitment, ensuring specialised expertise and tailored solutions.",
     },
   ];
 
@@ -53,7 +53,7 @@ export default function AboutUsPage() {
     ],
     "Higher Education": [
       { level: "Undergraduate", description: "Bachelor's degree programs and college education" },
-      { level: "Post Graduate", description: "Master's degree and advanced specialized programs" },
+      { level: "Post Graduate", description: "Master's degree and advanced specialised programs" },
       { level: "Doctoral", description: "PhD and research-focused doctoral studies" },
       { level: "Post Doctoral", description: "Advanced research and academic positions" },
     ],

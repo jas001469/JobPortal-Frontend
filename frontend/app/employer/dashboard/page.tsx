@@ -363,7 +363,7 @@ export default function EmployerDashboard() {
                 </svg>
                 Post New Job
               </Link>
-              <Link
+              {/* <Link
                 href="/employer/profile"
                 className="group border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-full font-medium hover:border-red-300 hover:bg-red-50 hover:text-red-700 transition-all duration-300 flex items-center justify-center"
               >
@@ -372,7 +372,7 @@ export default function EmployerDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 Settings
-              </Link>
+              </Link> */}
             </div>
           </div>
 

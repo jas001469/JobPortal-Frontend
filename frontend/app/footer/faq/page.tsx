@@ -33,7 +33,7 @@ export default function FAQPage() {
       },
       {
         question: "Is EdTrellis free to use?",
-        answer: "Yes, basic features are free for both candidates and employers. Candidates can create profiles, search jobs, and apply for free. Employers have access to basic posting features with our free plan, while premium features are available through our subscription plans."
+        answer: "Yes, basic features are free for both candidates and employers. Candidates can create profiles, search jobs, and apply for free through the basic plan. Employers have access to basic posting features with our free plan. Premium features are available through our subscription plans. Currently only the basic features are being offered, premium features shall be added and made available in due course."
       },
       {
         question: "How do I get started?",
@@ -45,7 +45,7 @@ export default function FAQPage() {
       },
       {
         question: "How can I contact customer support?",
-        answer: "You can reach our customer support team through the Contact Support page, email us at support@edtrellis.com, or call our support line at +91 98765 43210 during business hours (Monday to Friday, 9 AM to 6 PM IST)."
+        answer: "You can reach our customer support team through the Contact Support page, email us at support@edtrellis.com."
       },
       {
         question: "Do you have a mobile app?",
@@ -59,25 +59,25 @@ export default function FAQPage() {
       },
       {
         question: "How can I apply for jobs?",
-        answer: "To apply for jobs:\n1. Search for jobs using keywords, location, or filters\n2. Click on a job posting to view details\n3. Click 'Apply Now' or 'Quick Apply'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
+        answer: "To apply for jobs:\n1. Upload a professional photo \n2. Click on a job posting to view details\n3. Click 'Apply Now'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
       },
       {
         question: "Can I track my job applications?",
-        answer: "Yes! All your job applications are tracked in your candidate dashboard. You can see:\n• Application status (Submitted, Viewed, Shortlisted, Rejected)\n• Employer activity\n• Interview schedules\n• Application history\n\nYou'll also receive email notifications for updates."
+        answer: "Yes! All your job applications are tracked in your candidate dashboard.\n You can see:\n• Application status (Total Applications, Pending, Reviewed, Accepted)"
       },
-      {
-        question: "How do I set up job alerts?",
-        answer: "To set up job alerts:\n1. Go to your profile settings\n2. Navigate to 'Job Alerts'\n3. Set your preferences (keywords, location, job type)\n4. Choose notification frequency (daily/weekly)\n5. Save your settings\n\nYou'll receive email notifications when matching jobs are posted."
-      },
-      {
-        question: "Is my profile visible to all employers?",
-        answer: "You can control your profile visibility in privacy settings:\n• Public: Visible to all registered employers\n• Private: Only visible to employers you apply to\n• Hidden: Not visible to any employers\n\nYou can change these settings anytime in your profile."
-      }
+      // {
+      //   question: "How do I set up job alerts?",
+      //   answer: "To set up job alerts:\n1. Go to your profile settings\n2. Navigate to 'Job Alerts'\n3. Set your preferences (keywords, location, job type)\n4. Choose notification frequency (daily/weekly)\n5. Save your settings\n\nYou'll receive email notifications when matching jobs are posted."
+      // },
+      // {
+      //   question: "Is my profile visible to all employers?",
+      //   answer: "You can control your profile visibility in privacy settings:\n• Public: Visible to all registered employers\n• Private: Only visible to employers you apply to\n• Hidden: Not visible to any employers\n\nYou can change these settings anytime in your profile."
+      // }
     ],
     employer: [
       {
         question: "How do I post a job opening?",
-        answer: "To post a job:\n1. Go to 'Post a Job' from your employer dashboard\n2. Fill in job details (title, description, requirements)\n3. Set location, salary, and job type\n4. Choose application method\n5. Review and publish\n\nFree plan allows limited postings. Upgrade for more features."
+        answer: "To post a job:\n1. Go to 'Post a Job' from your employer dashboard\n2. Fill in job details (title, description, requirements)\n3. Set location, salary, and job type\n4. Review and publish\n\nFree plan allows limited postings. Upgrade for more features."
       },
       {
         question: "How can I search for candidates?",
@@ -85,16 +85,16 @@ export default function FAQPage() {
       },
       {
         question: "What are the subscription plans for employers?",
-        answer: "We offer three plans:\n1. Recruit Basic (Free): Basic posting and candidate management\n2. Talent Pro (₹499/month): Advanced features and analytics\n3. HR Master (₹799/month): Complete HR solution with premium support\n\nAll paid plans include a 7-day free trial."
+        answer: "All paid plans include a 7-day free trial. Currently, only the basic plan is being offered, premium plans shall be added in due course."
       },
       {
         question: "How do I manage applications received?",
-        answer: "Use our application management system:\n• View all applications in one dashboard\n• Shortlist, reject, or schedule interviews\n• Send bulk emails to candidates\n• Track application status\n• Generate reports\n\nThis streamlines your hiring process significantly."
+        answer: "• View all applications in one dashboard\n• Shortlist or reject\n• Track application status\n"
       },
-      {
-        question: "Can I schedule interviews through EdTrellis?",
-        answer: "Yes! Premium plans include interview scheduling:\n• Send interview invitations\n• Schedule multiple rounds\n• Integration with calendar apps\n• Automated reminders\n• Video interview options\n\nSaves time and improves candidate experience."
-      }
+      // {
+      //   question: "Can I schedule interviews through EdTrellis?",
+      //   answer: "Yes! Premium plans include interview scheduling:\n• Send interview invitations\n• Schedule multiple rounds\n• Integration with calendar apps\n• Automated reminders\n• Video interview options\n\nSaves time and improves candidate experience."
+      // }
     ],
     account: [
       {
@@ -115,22 +115,22 @@ export default function FAQPage() {
       },
       {
         question: "Will I get a refund if I cancel?",
-        answer: "Refund policy:\n• 7-day free trial: No charges if cancelled within trial period\n• Monthly subscriptions: No refunds for partial months\n• Annual subscriptions: Pro-rated refunds available\n• Special circumstances: Contact support for assistance\n\nRefer to our Terms & Conditions for complete details."
+        answer: "Refund policy:\n• 7-day free trial: No charges if cancelled within trial period\n• Monthly subscriptions: No refunds for partial months\n• Special circumstances: Contact support for assistance\n"
       }
     ],
     security: [
       {
         question: "How is my data protected?",
-        answer: "We use multiple layers of security:\n• 256-bit SSL encryption for all data transmission\n• Secure server infrastructure with regular audits\n• Two-factor authentication available\n• Regular security updates and patches\n• Compliance with data protection regulations\n\nYour privacy and security are our top priorities."
+        answer: "We use multiple layers of security:\n• Secure server infrastructure with regular audits\n• Regular security updates and patches\n• Compliance with data protection regulations\n\nYour privacy and security are our top priorities."
       },
       {
         question: "Who can see my personal information?",
         answer: "We strictly control data access:\n• Only necessary personnel have access\n• Employers see only information you choose to share\n• No selling of personal data to third parties\n• Anonymized data used for analytics\n• Complete transparency in data usage\n\nReview our Privacy Policy for detailed information."
       },
-      {
-        question: "How do I enable two-factor authentication?",
-        answer: "Enable 2FA for enhanced security:\n1. Go to 'Account Settings'\n2. Select 'Security'\n3. Click 'Enable Two-Factor Authentication'\n4. Follow setup instructions\n5. Verify with your mobile device\n\nRecommended for all users, especially employers handling sensitive data."
-      },
+      // {
+      //   question: "How do I enable two-factor authentication?",
+      //   answer: "Enable 2FA for enhanced security:\n1. Go to 'Account Settings'\n2. Select 'Security'\n3. Click 'Enable Two-Factor Authentication'\n4. Follow setup instructions\n5. Verify with your mobile device\n\nRecommended for all users, especially employers handling sensitive data."
+      // },
       {
         question: "What should I do if I suspect unauthorized access?",
         answer: "If you suspect unauthorized access:\n1. Immediately change your password\n2. Enable two-factor authentication\n3. Check recent account activity\n4. Contact our security team at security@edtrellis.com\n5. Review connected devices and sessions\n\nWe'll help secure your account and investigate."
@@ -139,7 +139,7 @@ export default function FAQPage() {
     technical: [
       {
         question: "The website isn't loading properly. What should I do?",
-        answer: "Try these troubleshooting steps:\n1. Refresh the page (Ctrl+F5 for hard refresh)\n2. Clear browser cache and cookies\n3. Try a different browser\n4. Check your internet connection\n5. Disable browser extensions temporarily\n\nIf issues persist, contact technical support with error details."
+        answer: "If issues persist, contact technical support with error details."
       },
       {
         question: "I can't upload my resume. What's wrong?",
@@ -147,7 +147,7 @@ export default function FAQPage() {
       },
       {
         question: "Why am I not receiving email notifications?",
-        answer: "If you're not receiving emails:\n1. Check your spam/junk folder\n2. Add notifications@edtrellis.com to contacts\n3. Verify your email address in account settings\n4. Check notification preferences\n5. Ensure mailbox isn't full\n\nYou can also enable SMS notifications as backup."
+        answer: "If you're not receiving emails:\n1. Check your spam/junk folder\n2. Verify your email address in account settings\n3. Check notification preferences\n4. Ensure mailbox isn't full\n\nYou can also enable SMS notifications as backup."
       },
       {
         question: "How do I delete my account permanently?",

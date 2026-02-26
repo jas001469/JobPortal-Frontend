@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Link as LinkIcon, Globe, Briefcase, ChevronRight, FileText, List, Tag, Calendar, MapPin, Search } from "lucide-react";
+import { ExternalLink, Link as LinkIcon, Globe, Briefcase, ChevronRight, FileText, List, Tag, Calendar, MapPin, Search, Edit2 } from "lucide-react";
 
-// Indian locations data
+// Indian locations data (keeping as is)
 const INDIAN_LOCATIONS = [
-  // Major Cities
+  // ... (keep your existing locations array)
   "Mumbai, Maharashtra",
   "Delhi, Delhi",
   "New Delhi",
@@ -84,47 +84,123 @@ const INDIAN_LOCATIONS = [
   "Assam",
 ];
 
-// Job categories data based on provided list
+// Updated Job categories - all positions as separate categories
 const JOB_CATEGORIES = [
-  // Main categories and their subcategories
-  { category: "ACADEMIC ADMINISTRATION", subcategories: ["Vice-Chancellor", "Pro-VC", "Registrar", "Principal", "Dean", "Deputy Registrar", "Assistant Registrar", "Director", "Campus Director", "Joint Director", "Assistant Director"] },
-  { category: "ADMISSION", subcategories: ["Counsellor"] },
-  { category: "AUDIT", subcategories: [] },
-  { category: "ADMINISTRATION", subcategories: ["Chief Administrative Officer", "House Keeping"] },
-  { category: "ENGINEERING", subcategories: ["Chief Engineer", "Executive Engineer", "Assistant Engineer", "Junior Engineer"] },
-  { category: "ESTABLISHMENT", subcategories: [] },
-  { category: "ESTATE", subcategories: ["Estate Officer"] },
-  { category: "EXAMINATION", subcategories: ["Controller Of Examination"] },
-  { category: "FINANCE and ACCOUNTS", subcategories: ["Finance Officer", "Director Finance & Accounts", "Accounts officer", "Assistant Accounts Officer"] },
-  { category: "GUEST HOUSE", subcategories: ["Receptionist", "Cook", "Care Taker", "Manager"] },
-  { category: "HOSTEL", subcategories: ["Assistant Hostel Warden", "Hostel Warden", "Chief Hostel Warden"] },
-  { category: "LIBRARY", subcategories: ["Librarian", "Assistant Librarian"] },
-  { category: "INFORMATION TECHNOLOGY", subcategories: ["System Administrator", "System Analyst", "MIS Coordinator", "Computer Engineer"] },
-  { category: "LEGAL", subcategories: ["Adviser", "Law Officer"] },
-  { category: "PLANNING AND DEVELOPMENT", subcategories: [] },
-  { category: "PUBLIC RELATIONS", subcategories: [] },
-  { category: "RESEARCH", subcategories: [] },
-  { category: "STUDENT AFFAIRS", subcategories: ["Proctor", "Dean Student Welfare"] },
-  { category: "SECURITY", subcategories: ["Chief Security Officer", "Security Officer", "Assistant Security Officer", "Security Assistant", "Watch & Ward Assistant", "Gunman", "Security Guard"] },
-  { category: "TRAINING AND PLACEMENT", subcategories: ["Training and Placement Officer", "Head Training and Placement"] },
-  { category: "TRANSPORT", subcategories: ["Transport Manager", "Driver"] },
-  { category: "VIGILANCE", subcategories: ["Chief Vigilance Officer", "Deputy Vigilance Officer"] },
-  { category: "IQAC", subcategories: [] },
-  { category: "MULTI-TASKING", subcategories: [] },
-  { category: "MEDICAL", subcategories: ["Medical Officer", "Nurse"] },
-  { category: "PURCHASE", subcategories: ["Purchase Officer"] },
-  { category: "STORE", subcategories: ["Store Keeper"] },
-  { category: "TRANSLATOR", subcategories: ["Translator"] },
-  { category: "TEACHING/ACADEMIC", subcategories: ["Assistant Professor", "Associate Professor", "Professor", "Guest Faculty", "Adjunct Faculty", "Professor Emeritus", "Professor of Practice", "Lecturer", "TGT", "PGT", "NTT", "Research Assistant", "Junior Assistant", "Teaching Assistant"] },
-  { category: "LABORATORY", subcategories: ["Lab Engineer", "Lab Assistant"] },
+  "Vice-Chancellor",
+  "Pro-VC",
+  "Registrar",
+  "Principal",
+  "Dean",
+  "Joint Registrar",
+  "Deputy Registrar",
+  "Assistant Registrar",
+  "Director",
+  "Campus Director",
+  "Joint Director",
+  "Assistant Director",
+  "Admission Counsellor",
+  "Auditor",
+  "Chief Administrative Officer",
+  "Chief Engineer",
+  "Executive Engineer",
+  "Assistant Engineer",
+  "Junior Engineer",
+  "Establishment Assistant",
+  "Estate Officer",
+  "Controller Of Examination",
+  "Assistant Controller of Examinations",
+  "Controller of Finance",
+  "Finance Officer",
+  "Director Finance & Accounts",
+  "Accounts officer",
+  "Assistant Accounts Officer",
+  "Senior Accounts Officer",
+  "Accountant",
+  "Cashier",
+  "Accounts Clerk",
+  "Receptionist",
+  "Cook",
+  "Care Taker",
+  "Manager",
+  "Chief Executive Officer",
+  "Assistant Hostel Warden",
+  "Hostel Warden",
+  "Chief Hostel Warden",
+  "Librarian",
+  "Assistant Librarian",
+  "Senior Librarian",
+  "System Administrator",
+  "System Analyst",
+  "MIS Coordinator",
+  "Computer Engineer",
+  "Legal Adviser",
+  "Law Officer",
+  "Judicial Assistant",
+  "Planning and Development Officer",
+  "Public Relations Officer",
+  "Project Assistant",
+  "Proctor",
+  "Dean Student Welfare",
+  "Chief Security Officer",
+  "Security Officer",
+  "Assistant Security Officer",
+  "Security Assistant",
+  "Watch & Ward Assistant",
+  "Gunman",
+  "Security Guard",
+  "Training and Placement Officer",
+  "Head Training and Placement",
+  "Transport Manager",
+  "Driver",
+  "Chief Vigilance Officer",
+  "Vigilance Officer",
+  "Director IQAC",
+  "Multi-Tasking Staff",
+  "Medical Officer",
+  "Nurse",
+  "Purchase Officer",
+  "Senior Store Officer",
+  "Store Officer",
+  "Store Keeper",
+  "Junior Hindi Translator",
+  "Assistant Professor",
+  "Associate Professor",
+  "Professor",
+  "Guest Faculty",
+  "Adjunct Faculty",
+  "Professor Emeritus",
+  "Professor of Practice",
+  "Lecturer",
+  "TGT (Trained Graduate Teacher)",
+  "PGT (Post Graduate Teacher)",
+  "NTT (Nursery Teacher)",
+  "Research Assistant",
+  "Junior Assistant",
+  "Teaching Assistant",
+  "Lab Engineer",
+  "Lab Assistant"
 ];
 
-// Flatten all categories for the dropdown
-const ALL_CATEGORIES = JOB_CATEGORIES.flatMap(item => 
-  item.subcategories.length > 0 
-    ? [`${item.category} - ${item.subcategories.join(', ')}`, ...item.subcategories.map(sub => `${item.category} - ${sub}`)]
-    : [item.category]
-).sort();
+// All categories for dropdown
+const ALL_CATEGORIES = [...JOB_CATEGORIES].sort();
+
+// Job type options
+const JOB_TYPE_OPTIONS = [
+  "Internship",
+  "Temporary",
+  "Consultant",
+  "Freelance",
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Deputation",
+  "Regular",
+  "Short-Term Contract",
+  "Long-Term Contract",
+  "Tenure",
+  "Remote",
+  "Others"
+];
 
 export default function PostJobPage() {
   const router = useRouter();
@@ -136,12 +212,14 @@ export default function PostJobPage() {
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [categorySuggestions, setCategorySuggestions] = useState<string[]>([]);
+  const [showOtherTypeInput, setShowOtherTypeInput] = useState(false);
   
   // Refs for autocomplete
   const locationInputRef = useRef<HTMLInputElement>(null);
   const categoryInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const categorySuggestionsRef = useRef<HTMLDivElement>(null);
+  const otherTypeInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form with empty optional fields and job deadline
   const [form, setForm] = useState({
@@ -149,14 +227,15 @@ export default function PostJobPage() {
     company: "",
     location: "",
     salary: "",
-    type: "", // Made optional
-    category: "", // Made optional
-    description: "", // Made optional
-    requirements: "", // Made optional
-    skills: "", // Made optional
+    type: "",
+    otherType: "", // New field for custom job type
+    category: "",
+    description: "",
+    requirements: "",
+    skills: "",
     experience: "0-1 years",
     education: "Any",
-    deadline: "", // New field for job deadline
+    deadline: "",
     applicationLink: "",
     companyWebsite: "",
     jobReferenceLink: "",
@@ -217,6 +296,25 @@ export default function PostJobPage() {
     };
   }, []);
 
+  // Focus on other type input when "Others" is selected
+  useEffect(() => {
+    if (form.type === "Others") {
+      setShowOtherTypeInput(true);
+      // Focus on the other type input after a short delay to ensure it's rendered
+      setTimeout(() => {
+        if (otherTypeInputRef.current) {
+          otherTypeInputRef.current.focus();
+        }
+      }, 100);
+    } else {
+      setShowOtherTypeInput(false);
+      // Clear otherType when not in "Others" mode
+      if (form.type !== "Others") {
+        setForm(prev => ({ ...prev, otherType: "" }));
+      }
+    }
+  }, [form.type]);
+
   // Handle location input with autocomplete
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -226,7 +324,7 @@ export default function PostJobPage() {
     if (value.length > 0) {
       const filtered = INDIAN_LOCATIONS.filter(location =>
         location.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 10); // Limit to 10 suggestions
+      ).slice(0, 10);
       setLocationSuggestions(filtered);
       setShowLocationSuggestions(true);
     } else {
@@ -240,7 +338,6 @@ export default function PostJobPage() {
     setShowLocationSuggestions(false);
     setLocationSuggestions([]);
     
-    // Keep focus on input after selection
     if (locationInputRef.current) {
       locationInputRef.current.focus();
     }
@@ -251,11 +348,10 @@ export default function PostJobPage() {
     const value = e.target.value;
     setForm({ ...form, category: value });
     
-    // Filter category suggestions
     if (value.length > 0) {
       const filtered = ALL_CATEGORIES.filter(category =>
         category.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 15); // Limit to 15 suggestions
+      ).slice(0, 15);
       setCategorySuggestions(filtered);
       setShowCategorySuggestions(true);
     } else {
@@ -269,7 +365,6 @@ export default function PostJobPage() {
     setShowCategorySuggestions(false);
     setCategorySuggestions([]);
     
-    // Keep focus on input after selection
     if (categoryInputRef.current) {
       categoryInputRef.current.focus();
     }
@@ -280,9 +375,7 @@ export default function PostJobPage() {
   };
 
   const validateUrl = (url: string) => {
-    if (!url) return true; // Empty is valid (optional field)
-    
-    // Basic URL validation
+    if (!url) return true;
     const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/;
     return urlPattern.test(url);
   };
@@ -320,12 +413,18 @@ export default function PostJobPage() {
     }
 
     try {
+      // Determine the final job type value
+      let finalJobType = form.type;
+      if (form.type === "Others" && form.otherType.trim()) {
+        finalJobType = form.otherType.trim();
+      }
+
       // Format requirements and skills as arrays
-      const jobData = {
+      const { otherType, ...jobData } = {
         ...form,
+        type: finalJobType,
         requirements: form.requirements.split("\n").filter(r => r.trim() !== ""),
         skills: form.skills.split(",").map(s => s.trim()).filter(s => s !== ""),
-        // Convert deadline to Date object if provided
         deadline: form.deadline ? new Date(form.deadline) : null,
       };
 
@@ -347,20 +446,20 @@ export default function PostJobPage() {
           company: "",
           location: "",
           salary: "",
-          type: "", // Reset to empty
-          category: "", // Reset to empty
+          type: "",
+          otherType: "",
+          category: "",
           description: "",
           requirements: "",
           skills: "",
           experience: "0-1 years",
           education: "Any",
-          deadline: "", // Reset deadline
+          deadline: "",
           applicationLink: "",
           companyWebsite: "",
           jobReferenceLink: "",
         });
         
-        // Redirect to jobs page after 2 seconds
         setTimeout(() => {
           router.push("/employer/dashboard");
         }, 2000);
@@ -581,7 +680,7 @@ export default function PostJobPage() {
                     />
                   </div>
 
-                  {/* Job Type - Now Optional */}
+                  {/* Job Type with Others option */}
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Job Type
@@ -590,25 +689,38 @@ export default function PostJobPage() {
                       name="type"
                       value={form.type}
                       onChange={handleChange}
-                      className="w-full border text-gray-400 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
                     >
                       <option value="">Select job type</option>
-                      <option value="Internship">Internship</option>
-                      <option value="Temporary">Temporary</option>
-                      <option value="Consultant">Consultant</option>
-                      <option value="Freelance">Freelance</option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Deputation">Deputation</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Short-Term Contract">Short-Term Contract</option>
-                      <option value="Long-Term Contract">Long-Term Contract</option>
-                      <option value="Tenure">Tenure</option>
-                      <option value="Remote">Remote</option>
-                      <option value="Others">Others</option>
+                      {JOB_TYPE_OPTIONS.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
                     </select>
                   </div>
 
-                  {/* Category - Now Optional with Autocomplete */}
+                  {/* Custom Job Type Input for "Others" */}
+                  {showOtherTypeInput && (
+                    <div className="animate-fadeIn">
+                      <label className="block text-sm font-medium text-gray-900 mb-2 flex items-center">
+                        <Edit2 className="h-4 w-4 mr-2 text-gray-400" />
+                        Specify Job Type
+                      </label>
+                      <input
+                        ref={otherTypeInputRef}
+                        type="text"
+                        name="otherType"
+                        value={form.otherType}
+                        onChange={handleChange}
+                        className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                        placeholder="Enter custom job type..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        This will be saved as the job type
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Category - with Autocomplete */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Category
@@ -631,9 +743,6 @@ export default function PostJobPage() {
                         autoComplete="off"
                       />
                     </div>
-                    {/* <p className="text-xs text-gray-500 mt-1">
-                      Optional: Start typing to search from 30+ categories
-                    </p> */}
                     
                     {/* Category Autocomplete Suggestions */}
                     {showCategorySuggestions && categorySuggestions.length > 0 && (
@@ -656,7 +765,7 @@ export default function PostJobPage() {
                     )}
                   </div>
 
-                  {/* New Deadline Field */}
+                  {/* Deadline Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2 flex items-center">
                       <Calendar className="h-4 w-4 mr-2 text-gray-400" />
@@ -668,11 +777,8 @@ export default function PostJobPage() {
                       value={form.deadline}
                       onChange={handleChange}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full border text-gray-400 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
                     />
-                    {/* <p className="text-xs text-gray-500 mt-1">
-                      Optional: Last date to apply for this position
-                    </p> */}
                   </div>
                 </div>
 
@@ -691,7 +797,7 @@ export default function PostJobPage() {
               </div>
             )}
 
-            {/* Tab 2: Job Description - Now Optional Fields */}
+            {/* Tab 2: Job Description */}
             {activeTab === "details" && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
@@ -715,7 +821,7 @@ export default function PostJobPage() {
                     onChange={handleChange}
                     rows={5}
                     className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    placeholder="Describe the job responsibilities, tasks, and day-to-day activities..."
+                    placeholder=""
                   />
                 </div>
 
@@ -730,9 +836,7 @@ export default function PostJobPage() {
                     onChange={handleChange}
                     rows={4}
                     className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    placeholder="• 3+ years of experience in React
-• Strong knowledge of JavaScript
-• Experience with Redux or Context API"
+                    placeholder=""
                   />
                 </div>
 
@@ -747,7 +851,7 @@ export default function PostJobPage() {
                     value={form.skills}
                     onChange={handleChange}
                     className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    placeholder="e.g., Teaching, Research, Administration"
+                    placeholder=""
                   />
                 </div>
 
@@ -928,7 +1032,7 @@ export default function PostJobPage() {
                   <li>Title: {form.title || "Not filled"}</li>
                   <li>Institute: {form.company || "Not filled"}</li>
                   <li>Location: {form.location || "Not filled"}</li>
-                  <li>Job Type: {form.type || "Optional"}</li>
+                  <li>Job Type: {form.type === "Others" && form.otherType ? form.otherType : (form.type || "Optional")}</li>
                   <li>Category: {form.category || "Optional"}</li>
                   <li>Deadline: {form.deadline || "Optional"}</li>
                 </ul>

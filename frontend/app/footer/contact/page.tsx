@@ -41,14 +41,14 @@ export default function ContactPage() {
   };
 
   const contactMethods = [
-    {
-      icon: Phone,
-      title: "Phone Support",
-      details: "+91 12345 6789",
-      description: "Monday to Friday, 9 AM to 6 PM IST",
-      color: "bg-green-50",
-      iconColor: "text-green-600",
-    },
+    // {
+    //   icon: Phone,
+    //   title: "Phone Support",
+    //   details: "+91 12345 6789",
+    //   description: "Monday to Friday, 9 AM to 6 PM IST",
+    //   color: "bg-green-50",
+    //   iconColor: "text-green-600",
+    // },
     {
       icon: Mail,
       title: "Email Support",
@@ -57,14 +57,14 @@ export default function ContactPage() {
       color: "bg-blue-50",
       iconColor: "text-blue-600",
     },
-    {
-      icon: MapPin,
-      title: "Office Address",
-      details: "204-A, West End Road Meerut Cantt",
-      description: "KUttar Pradesh, India (250001)",
-      color: "bg-red-50",
-      iconColor: "text-red-600",
-    },
+    // {
+    //   icon: MapPin,
+    //   title: "Office Address",
+    //   details: "204-A, West End Road Meerut Cantt",
+    //   description: "KUttar Pradesh, India (250001)",
+    //   color: "bg-red-50",
+    //   iconColor: "text-red-600",
+    // },
     {
       icon: Clock,
       title: "Working Hours",
@@ -302,7 +302,7 @@ export default function ContactPage() {
                   </button>
                   
                   <p className="ml-6 text-sm text-gray-500">
-                    We typically respond within 24 hours
+                    Average response time – 72 hrs
                   </p>
                 </div>
               </form>

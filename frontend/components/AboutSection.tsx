@@ -55,13 +55,13 @@ export default function AboutPage() {
               <Feature
                 icon={<CheckCircle className="h-6 w-6" />}
                 title="Applying Made Easy "
-                desc="Submit applications with just a few clicks, no lengthy forms."
+                desc="Submit CV directly and find links to applications."
                 
               />
               <Feature
                 icon={<Briefcase className="h-6 w-6" />}
                 title="Get Noticed "
-                desc="Get hired and begin earning with essential service roles."
+                desc="Most employers from the education sector search talent here."
                 
               />
             </div>

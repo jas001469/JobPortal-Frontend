@@ -45,7 +45,7 @@ export default function PrivacyPage() {
   </div>
 
   {/* RIGHT SIDE - IMAGE */}
-   <div className="flex justify-center">
+   {/* <div className="flex justify-center">
   <div className="w-85 h-85 rounded-full overflow-hidden shadow-lg">
     <img
       src="/photo6.JPG"
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
       className="w-full h-full object-cover"
     />
   </div>
-</div>
+</div> */}
 
 </div>
 
@@ -396,7 +396,7 @@ export default function PrivacyPage() {
                 
                 <div className="bg-gray-50 rounded-xl p-6">
                   <p className="text-gray-700">
-                    While we implement appropriate technical and organizational measures to protect your personal information, no security system is impenetrable. We cannot guarantee the security of our databases, nor can we guarantee that information you supply will not be intercepted while being transmitted to us over the Internet.
+                    While we implement appropriate technical and organisational measures to protect your personal information, no security system is impenetrable. We cannot guarantee the security of our databases, nor can we guarantee that information you supply will not be intercepted while being transmitted to us over the Internet.
                   </p>
                 </div>
               </section>

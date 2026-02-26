@@ -182,7 +182,7 @@ export default function Footer() {
                   Contact Support
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link 
                   href="/" 
                   className="text-gray-400 hover:text-white flex items-center transition group"
@@ -190,7 +190,7 @@ export default function Footer() {
                   <ChevronRight size={16} className="mr-2 opacity-0 group-hover:opacity-100 transition" />
                   Cookie Policy
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 

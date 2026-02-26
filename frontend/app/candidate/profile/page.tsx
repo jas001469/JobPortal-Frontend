@@ -8,14 +8,13 @@ export default function CandidateProfilePage() {
   const [candidate, setCandidate] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [savingResumeLink, setSavingResumeLink] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phone: "",
     address: "",
     city: "",
     state: "",
@@ -27,8 +26,8 @@ export default function CandidateProfilePage() {
 
   const [education, setEducation] = useState<any[]>([]);
   const [experience, setExperience] = useState<any[]>([]);
-  const [resume, setResume] = useState<File | null>(null);
-  const [resumeUrl, setResumeUrl] = useState("");
+  const [resumeLink, setResumeLink] = useState("");
+  const [newResumeLink, setNewResumeLink] = useState("");
 
   useEffect(() => {
     fetchCandidate();
@@ -63,7 +62,6 @@ export default function CandidateProfilePage() {
     setForm({
       name: candidateData.name || "",
       email: candidateData.email || "",
-      phone: candidateData.phone || "",
       address: candidateData.address || "",
       city: candidateData.city || "",
       state: candidateData.state || "",
@@ -74,59 +72,59 @@ export default function CandidateProfilePage() {
     });
     setEducation(candidateData.education || []);
     setExperience(candidateData.experience || []);
-    setResumeUrl(candidateData.resume || "");
+    setResumeLink(candidateData.resume || "");
+    setNewResumeLink(candidateData.resume || "");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        setError("File size must be less than 5MB");
-        return;
-      }
-      setResume(file);
-    }
+  const handleResumeLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewResumeLink(e.target.value);
   };
 
-  const uploadResume = async () => {
-    if (!resume) {
-      setError("Please select a resume file");
+  const saveResumeLink = async () => {
+    if (!newResumeLink.trim()) {
+      setError("Please enter a resume link");
       return;
     }
 
-    setUploading(true);
+    // Basic URL validation
+    try {
+      new URL(newResumeLink);
+    } catch {
+      setError("Please enter a valid URL (e.g., https://drive.google.com/your-resume)");
+      return;
+    }
+
+    setSavingResumeLink(true);
     setError("");
     setSuccess("");
 
-    const formData = new FormData();
-    formData.append("resume", resume);
-
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidate/upload-resume`, {
-        method: "POST",
-        body: formData,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ resume: newResumeLink }),
         credentials: "include",
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setSuccess("Resume uploaded successfully!");
-        setResumeUrl(data.resumeUrl);
-        setResume(null);
-        // Update candidate data
-        fetchCandidate();
+        setSuccess("Resume link saved successfully!");
+        setResumeLink(newResumeLink);
+        setCandidate(data.candidate);
       } else {
-        setError(data.message || "Failed to upload resume");
+        setError(data.message || "Failed to save resume link");
       }
     } catch (err) {
-      setError("Failed to upload resume");
+      setError("Failed to save resume link");
     } finally {
-      setUploading(false);
+      setSavingResumeLink(false);
     }
   };
 
@@ -142,6 +140,7 @@ export default function CandidateProfilePage() {
         skills: form.skills.split(",").map(s => s.trim()).filter(s => s !== ""),
         education,
         experience,
+        resume: resumeLink, // Include the resume link in the main form submission
       };
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`, {
@@ -270,20 +269,6 @@ export default function CandidateProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                  placeholder="+91"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Country
                 </label>
                 <input
@@ -353,68 +338,68 @@ export default function CandidateProfilePage() {
             </div>
           </div>
 
-          {/* Resume Upload */}
+          {/* Resume Link */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Resume</h2>
             
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center">
-              {resumeUrl ? (
-                <div className="mb-4">
-                  <svg className="w-12 h-12 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-gray-700 mb-2">Resume uploaded successfully</p>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}${resumeUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-red-700 hover:underline"
-                  >
-                    View Resume
-                  </a>
+            <div className="border-2 border-gray-300 rounded-2xl p-8">
+              {resumeLink ? (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3">
+                      <svg className="w-6 h-6 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span className="font-medium text-gray-900">Resume</span>
+                    </div>
+                    <a
+                      href={resumeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-red-700 hover:text-red-800 transition"
+                    >
+                      <span>View</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               ) : (
-                <div className="mb-4">
-                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div className="mb-6 text-center">
+                  <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p className="text-gray-700 mb-2">No resume uploaded</p>
-                  <p className="text-sm text-gray-500 mb-4">Upload your resume to apply for jobs</p>
+                  <p className="text-gray-700 mb-2">No resume added</p>
+                  <p className="text-sm text-gray-500">
+                    Add a link to your online resume
+                  </p>
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <label className="cursor-pointer bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition">
-                  Choose File
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Resume Link
+                  </label>
                   <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleResumeChange}
-                    className="hidden"
+                    type="url"
+                    value={newResumeLink}
+                    onChange={handleResumeLinkChange}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    placeholder="https://drive.google.com/your-resume-link"
                   />
-                </label>
+                </div>
                 
-                {resume && (
-                  <button
-                    type="button"
-                    onClick={uploadResume}
-                    disabled={uploading}
-                    className="bg-green-700 text-white px-6 py-3 rounded-full font-medium hover:bg-green-800 transition disabled:opacity-50"
-                  >
-                    {uploading ? "Uploading..." : "Upload Resume"}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={saveResumeLink}
+                  disabled={savingResumeLink || newResumeLink === resumeLink}
+                  className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50"
+                >
+                  {savingResumeLink ? "Saving..." : "Save Resume Link"}
+                </button>
               </div>
-              
-              {resume && (
-                <p className="text-sm text-gray-500 mt-4">
-                  Selected: {resume.name} ({(resume.size / 1024 / 1024).toFixed(2)} MB)
-                </p>
-              )}
-              
-              <p className="text-xs text-gray-400 mt-4">
-                Supported formats: PDF, DOC, DOCX (Max 5MB)
-              </p>
             </div>
           </div>
 

@@ -19,23 +19,23 @@ export default function TermsPage() {
   ];
 
   const contentUsageItems = [
-    "(a) Submit any software or other materials that contain any viruses, worms, Trojan horses, defects, date bombs, time bombs or other items of a destructive nature.",
-    "(b) Manipulate identifiers, including by forging headers, in order to disguise the origin of any posting that you submit.",
-    "(c) Link to any portion of the Portal other than the URL assigned to the home page of the Portal.",
-    '(d) "Frame" or "mirror" any part of the Portal',
-    "(e) Modify, adapt, sub-license, translate, sell, reverse engineer, decompile or disassemble any portion of the Portal, or otherwise attempt to derive any source code or underlying ideas or algorithms of any part of the Content.",
-    "(f) Remove any copyright, trademark or other proprietary rights notices contained on the Portal.",
-    "(g) Use any computer program, bot, robot, spider, offline reader, site search/retrieval application or other manual or automatic device, tool, or process to retrieve, index, data mine, or in any way reproduce or circumvent the security structure, navigational structure, or presentation of the Content or the Portal, including with respect to any CAPTCHA displayed on the Portal. Operators of public search engines may use spiders to copy materials from the Portal for the sole purpose of and solely to the extent necessary for creating publicly available searchable indices of the materials, but not caches or archives of such materials. We may revoke this exception at any time and require the removal of archived materials gathered in the past.",
-    "(h) Use any automated software or computer system to search for or participate in activities including sending information from your computer to another computer where such software or system is active.",
-    "(i) Take any action that imposes or may impose (in our sole discretion) an unreasonable or disproportionately large load on our infrastructure.",
-    "(j) Reproduce, modify, display, publicly perform, distribute or create derivative works of the Portal or the Content.",
-    "(l) Decode, decrypt, modify, or reverse engineer in an attempt to, or in conjunction with, any device, program or service designed to circumvent any technological measure that effectively controls access to, or the rights in, the Portal and/or Content in any way including, manually by use of or automatic device or process, for any purpose.",
-    "(m) Use bot technology to search for activities through the Portal; for the avoidance of doubt, this specifically prohibits you from using automated software on the Portal, and prohibits you from circumventing any security measure, access control system, or other technological control or measure on the Portal."
+    " Submit any software or other materials that contain any viruses, worms, Trojan horses, defects, date bombs, time bombs or other items of a destructive nature.",
+    " Manipulate identifiers, including by forging headers, in order to disguise the origin of any posting that you submit.",
+    " Link to any portion of the Portal other than the URL assigned to the home page of the Portal.",
+    ' "Frame" or "mirror" any part of the Portal',
+    " Modify, adapt, sub-license, translate, sell, reverse engineer, decompile or disassemble any portion of the Portal, or otherwise attempt to derive any source code or underlying ideas or algorithms of any part of the Content.",
+    " Remove any copyright, trademark or other proprietary rights notices contained on the Portal.",
+    " Use any computer program, bot, robot, spider, offline reader, site search/retrieval application or other manual or automatic device, tool, or process to retrieve, index, data mine, or in any way reproduce or circumvent the security structure, navigational structure, or presentation of the Content or the Portal, including with respect to any CAPTCHA displayed on the Portal. Operators of public search engines may use spiders to copy materials from the Portal for the sole purpose of and solely to the extent necessary for creating publicly available searchable indices of the materials, but not caches or archives of such materials. We may revoke this exception at any time and require the removal of archived materials gathered in the past.",
+    " Use any automated software or computer system to search for or participate in activities including sending information from your computer to another computer where such software or system is active.",
+    " Take any action that imposes or may impose (in our sole discretion) an unreasonable or disproportionately large load on our infrastructure.",
+    " Reproduce, modify, display, publicly perform, distribute or create derivative works of the Portal or the Content.",
+    " Decode, decrypt, modify, or reverse engineer in an attempt to, or in conjunction with, any device, program or service designed to circumvent any technological measure that effectively controls access to, or the rights in, the Portal and/or Content in any way including, manually by use of or automatic device or process, for any purpose.",
+    " Use bot technology to search for activities through the Portal; for the avoidance of doubt, this specifically prohibits you from using automated software on the Portal, and prohibits you from circumventing any security measure, access control system, or other technological control or measure on the Portal."
   ];
 
   const cookieTypes = [
-    "(a) Analytics cookies for anonymously remembering your computer or mobile device when you visit our website to keep track of browsing patterns, and track the pages you view",
-    "(b) Service cookies for helping us to make our website work efficiently, remembering your registration and login details, settings preferences."
+    " Analytics cookies for anonymously remembering your computer or mobile device when you visit our website to keep track of browsing patterns, and track the pages you view",
+    " Service cookies for helping us to make our website work efficiently, remembering your registration and login details, settings preferences."
   ];
 
   return (
@@ -182,7 +182,7 @@ export default function TermsPage() {
                     <div className="bg-red-50 border border-red-100 rounded-xl p-5 mb-4">
                       <p className="text-gray-700">
                         You also agree to enter into a legally binding contract with the Company (even if 
-                        you are using third party credentials or using the Portal on behalf of a company).
+                        you are using third party credentials or using the Portal on behalf of a institution/company ; ‘z’ ; copyright holders).
                       </p>
                     </div>
                     
