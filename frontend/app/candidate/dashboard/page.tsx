@@ -134,7 +134,7 @@ export default function CandidateDashboard() {
                 Welcome back, <span className="font-semibold">{candidate?.name}</span>!
                 {!candidate?.resume && (
                   <span className="ml-4 text-sm text-red-600">
-                    <Link href="/candidate/profile" className="underline hover:text-red-800">
+                    <Link href="/candidate/profile#resume-section" className="underline hover:text-red-800">
                       Upload your resume to apply for jobs
                     </Link>
                   </span>
@@ -143,7 +143,7 @@ export default function CandidateDashboard() {
             </div>
             <div className="flex gap-4">
               <Link
-                href="/jobs"
+                href="/jobs/all-jobs"
                 className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition"
               >
                 Find Jobs
@@ -330,7 +330,7 @@ export default function CandidateDashboard() {
               </div>
               {!candidate?.resume && (
                 <Link
-                  href="/candidate/profile"
+                  href="/candidate/profile#resume-section"
                   className="block text-center bg-red-700 text-white py-2 rounded-lg font-medium hover:bg-red-800 transition mt-4"
                 >
                   Complete Your Profile
@@ -352,7 +352,7 @@ export default function CandidateDashboard() {
                 <span className="font-medium">Search for Jobs</span>
               </Link>
               <Link
-                href="/candidate/profile"
+                href="/candidate/profile#resume-section"
                 className="flex items-center p-3 rounded-lg border border-gray-200 hover:border-red-200 hover:bg-red-50 transition"
               >
                 <svg className="w-5 h-5 text-red-700 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
