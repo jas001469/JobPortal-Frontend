@@ -232,7 +232,7 @@ export default function CandidateDashboard() {
               <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
               <p className="text-gray-500 mb-4">Start applying for jobs to track your applications here</p>
               <Link
-                href="/jobs"
+                href="/jobs/all-jobs"
                 className="inline-block bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition"
               >
                 Browse Jobs

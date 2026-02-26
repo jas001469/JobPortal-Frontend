@@ -127,7 +127,7 @@ export default function Navbar() {
           )}
 
           {user?.role === "CANDIDATE" && (
-            <Link href="/jobs" className="hover:text-black">
+            <Link href="/jobs/all-jobs" className="hover:text-black">
               Apply for Job
             </Link>
           )}
