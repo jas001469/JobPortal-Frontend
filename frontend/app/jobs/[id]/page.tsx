@@ -9,7 +9,9 @@ import {
   FileText, 
   ExternalLink, 
   Calendar,
-  Link as LinkIcon 
+  Link as LinkIcon,
+  IndianRupee,
+  CheckCircle
 } from "lucide-react";
 
 interface Job {
@@ -37,18 +39,6 @@ interface Job {
   };
 }
 
-interface CandidateProfile {
-  _id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  resume?: string;
-  skills?: string[];
-  education?: any[];
-  experience?: any[];
-  summary?: string;
-}
-
 export default function JobDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -56,12 +46,8 @@ export default function JobDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState<any>(null);
-  const [candidateProfile, setCandidateProfile] = useState<CandidateProfile | null>(null);
-  const [applying, setApplying] = useState(false);
-  const [applySuccess, setApplySuccess] = useState("");
-  const [showApplyModal, setShowApplyModal] = useState(false);
-  const [fetchingProfile, setFetchingProfile] = useState(false);
-  const [profileError, setProfileError] = useState("");
+  const [hasApplied, setHasApplied] = useState(false);
+  const [checkingApplication, setCheckingApplication] = useState(true);
 
   useEffect(() => {
     fetchJob();
@@ -102,35 +88,40 @@ export default function JobDetailsPage() {
         const data = await response.json();
         if (data.success) {
           setUser(data.user);
-          // If user is a candidate, fetch their profile
+          // If user is a candidate, check if they've already applied
           if (data.user.role === "CANDIDATE") {
-            fetchCandidateProfile();
+            checkIfApplied();
+          } else {
+            setCheckingApplication(false);
           }
         }
+      } else {
+        setCheckingApplication(false);
       }
     } catch (error) {
       console.error("Error fetching user:", error);
+      setCheckingApplication(false);
     }
   };
 
-  const fetchCandidateProfile = async () => {
+  const checkIfApplied = async () => {
     try {
-      setFetchingProfile(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`, {
-        credentials: "include",
-      });
+      setCheckingApplication(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${params.id}/has-applied`,
+        {
+          credentials: "include",
+        }
+      );
       
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
-          setCandidateProfile(data.candidate);
-        }
+        setHasApplied(data.hasApplied);
       }
     } catch (error) {
-      console.error("Error fetching candidate profile:", error);
-      setProfileError("Failed to load profile");
+      console.error("Error checking application status:", error);
     } finally {
-      setFetchingProfile(false);
+      setCheckingApplication(false);
     }
   };
 
@@ -145,46 +136,8 @@ export default function JobDetailsPage() {
       return;
     }
 
-    // Show the apply modal
-    setShowApplyModal(true);
-  };
-
-  const handleApply = async () => {
-    // Check if candidate has resume
-    if (!candidateProfile?.resume) {
-      alert("Please add a resume link to your profile before applying");
-      setShowApplyModal(false);
-      // Redirect to profile page to add resume
-      router.push("/candidate/profile");
-      return;
-    }
-
-    setApplying(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${params.id}/apply`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        setApplySuccess("Application submitted successfully!");
-        setShowApplyModal(false);
-      } else {
-        alert(data.message || "Failed to apply");
-      }
-    } catch (err) {
-      alert("Something went wrong");
-    } finally {
-      setApplying(false);
-    }
+    // Redirect to confirmation page
+    router.push(`/jobs/confirm-apply/${params.id}`);
   };
 
   // Format date - Fixed to handle invalid dates
@@ -300,22 +253,22 @@ export default function JobDetailsPage() {
               <p className="text-xl text-gray-800 mb-4">{job.company}</p>
             </div>
             
-            {user?.role === "CANDIDATE" && !applySuccess && (
-              <button
-                onClick={handleApplyClick}
-                disabled={applying}
-                className="bg-red-700 text-white px-8 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {applying ? "Applying..." : "Apply Now"}
-              </button>
+            {user?.role === "CANDIDATE" && !checkingApplication && (
+              hasApplied ? (
+                <div className="flex items-center bg-green-50 text-green-700 px-6 py-3 rounded-full font-medium">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Already Applied
+                </div>
+              ) : (
+                <button
+                  onClick={handleApplyClick}
+                  className="bg-red-700 text-white px-8 py-3 rounded-full font-medium hover:bg-red-800 transition"
+                >
+                  Apply Now
+                </button>
+              )
             )}
           </div>
-
-          {applySuccess && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-              {applySuccess}
-            </div>
-          )}
 
           {/* Job Info Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
@@ -325,7 +278,10 @@ export default function JobDetailsPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Salary</p>
-              <p className="font-medium text-gray-900">{job.salary}</p>
+              <p className="font-medium text-gray-900 flex items-center">
+                <IndianRupee className="w-4 h-4 mr-1" />
+                {job.salary}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Experience</p>
@@ -534,16 +490,22 @@ export default function JobDetailsPage() {
             </div>
 
             {/* Quick Apply Button for Mobile */}
-            {user?.role === "CANDIDATE" && !applySuccess && (
+            {user?.role === "CANDIDATE" && !checkingApplication && (
               <div className="lg:hidden bg-white rounded-2xl shadow-lg p-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Ready to Apply?</h3>
-                <button
-                  onClick={handleApplyClick}
-                  disabled={applying}
-                  className="w-full bg-red-700 text-white px-8 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {applying ? "Applying..." : "Apply Now"}
-                </button>
+                {hasApplied ? (
+                  <div className="flex items-center justify-center bg-green-50 text-green-700 px-6 py-3 rounded-full font-medium">
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Already Applied
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleApplyClick}
+                    className="w-full bg-red-700 text-white px-8 py-3 rounded-full font-medium hover:bg-red-800 transition"
+                  >
+                    Apply Now
+                  </button>
+                )}
               </div>
             )}
 
@@ -589,150 +551,6 @@ export default function JobDetailsPage() {
           </div>
         </div>
       </div>
-
-      {/* Apply Modal */}
-      {showApplyModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Confirm Application</h3>
-                  <p className="text-gray-600 mt-1">
-                    Review your profile information before applying for {job?.title} at {job?.company}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowApplyModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {fetchingProfile ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading profile...</p>
-                </div>
-              ) : candidateProfile ? (
-                <>
-                  {/* Candidate Information */}
-                  <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Your Information</h4>
-                    
-                    <div className="space-y-4">
-                      {/* Name and Email */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-500">Full Name</p>
-                          <p className="font-medium text-gray-900">{candidateProfile.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Email</p>
-                          <p className="font-medium text-gray-900">{candidateProfile.email}</p>
-                        </div>
-                      </div>
-
-                      {/* Phone if exists */}
-                      {candidateProfile.phone && (
-                        <div>
-                          <p className="text-sm text-gray-500">Phone</p>
-                          <p className="font-medium text-gray-900">{candidateProfile.phone}</p>
-                        </div>
-                      )}
-
-                      {/* Resume */}
-                      {candidateProfile.resume && (
-                        <div>
-                          <p className="text-sm text-gray-500 mb-2">Resume</p>
-                          <a
-                            href={candidateProfile.resume}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-red-700 hover:text-red-800 bg-white px-4 py-2 rounded-lg border border-red-200"
-                          >
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            View Resume
-                          </a>
-                        </div>
-                      )}
-
-                      {/* Skills if exist */}
-                      {candidateProfile.skills && candidateProfile.skills.length > 0 && (
-                        <div>
-                          <p className="text-sm text-gray-500 mb-2">Skills</p>
-                          <div className="flex flex-wrap gap-2">
-                            {candidateProfile.skills.map((skill, index) => (
-                              <span
-                                key={index}
-                                className="px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Summary if exists */}
-                      {candidateProfile.summary && (
-                        <div>
-                          <p className="text-sm text-gray-500 mb-2">Professional Summary</p>
-                          <p className="text-gray-700 bg-white p-3 rounded-lg border">
-                            {candidateProfile.summary}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Job Summary */}
-                  <div className="bg-red-50 rounded-xl p-6 mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Job Details</h4>
-                    <div className="space-y-2">
-                      <p><span className="font-medium">Position:</span> {job?.title}</p>
-                      <p><span className="font-medium">Company:</span> {job?.company}</p>
-                      <p><span className="font-medium">Location:</span> {job?.location}</p>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => setShowApplyModal(false)}
-                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleApply}
-                      disabled={applying}
-                      className="flex-1 bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {applying ? "Applying..." : "Confirm & Apply"}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-600 mb-4">Could not load your profile information.</p>
-                  <button
-                    onClick={() => router.push("/candidate/profile")}
-                    className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition"
-                  >
-                    Go to Profile
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

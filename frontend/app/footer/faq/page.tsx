@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Search, HelpCircle, User, Briefcase, CreditCard, Shield, FileText, MessageSquare } from "lucide-react";
+import { ChevronDown, Search, HelpCircle, User, Briefcase, CreditCard, Shield, FileText, MessageSquare, Lock, Mail, Phone } from "lucide-react";
 
 export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState<string>("general");
@@ -28,12 +28,8 @@ export default function FAQPage() {
   const faqs = {
     general: [
       {
-        question: "What is EdTrellis?",
-        answer: "EdTrellis is a comprehensive job portal that connects talented candidates with employers. We provide a platform for job searching, recruitment, and career development for both job seekers and companies."
-      },
-      {
         question: "Is EdTrellis free to use?",
-        answer: "Yes, basic features are free for both candidates and employers. Candidates can create profiles, search jobs, and apply for free through the basic plan. Employers have access to basic posting features with our free plan. Premium features are available through our subscription plans. Currently only the basic features are being offered, premium features shall be added and made available in due course."
+        answer: "Yes, basic features are free forever for candidates. For the employers it is being provided free as a launch offer. Candidates can create profiles, search jobs, and apply for free through the basic plan. Employers have access to basic posting features with our free plan. Premium features are available through our subscription plans. Currently only the basic features are being offered, premium features shall be added and made available in due course."
       },
       {
         question: "How do I get started?",
@@ -45,7 +41,7 @@ export default function FAQPage() {
       },
       {
         question: "How can I contact customer support?",
-        answer: "You can reach our customer support team through the Contact Support page, email us at support@edtrellis.com."
+        answer: "You can reach our customer support team through the Contact Support page, email us at support@edtrellis.com, or call us at +91 12345 6789. Average response time is 72 hours."
       },
       {
         question: "Do you have a mobile app?",
@@ -55,24 +51,16 @@ export default function FAQPage() {
     candidate: [
       {
         question: "How do I create an effective profile?",
-        answer: "To create an effective profile:\n1. Upload a professional photo\n2. Complete all sections including education, experience, and skills\n3. Write a compelling professional summary\n4. Upload your resume\n5. Keep your profile updated regularly\n\nA complete profile increases your visibility to employers by 70%."
+        answer: "To create an effective profile:\n1. Upload a professional photo (this is an important feature not available but required)\n2. Complete all sections including education, experience, and skills\n3. Write a compelling professional summary\n4. Upload your resume\n5. Keep your profile updated regularly\n\nA complete profile increases your visibility to employers by 70%."
       },
       {
-        question: "How can I apply for jobs?",
-        answer: "To apply for jobs:\n1. Upload a professional photo \n2. Click on a job posting to view details\n3. Click 'Apply Now'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
+        question: "How do I apply for jobs?",
+        answer: "To apply for jobs:\n1. Upload a professional photo (this is an important feature not available but required)\n2. Click on a job posting to view details\n3. Click 'Apply Now'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
       },
       {
         question: "Can I track my job applications?",
-        answer: "Yes! All your job applications are tracked in your candidate dashboard.\n You can see:\n• Application status (Total Applications, Pending, Reviewed, Accepted)"
-      },
-      // {
-      //   question: "How do I set up job alerts?",
-      //   answer: "To set up job alerts:\n1. Go to your profile settings\n2. Navigate to 'Job Alerts'\n3. Set your preferences (keywords, location, job type)\n4. Choose notification frequency (daily/weekly)\n5. Save your settings\n\nYou'll receive email notifications when matching jobs are posted."
-      // },
-      // {
-      //   question: "Is my profile visible to all employers?",
-      //   answer: "You can control your profile visibility in privacy settings:\n• Public: Visible to all registered employers\n• Private: Only visible to employers you apply to\n• Hidden: Not visible to any employers\n\nYou can change these settings anytime in your profile."
-      // }
+        answer: "Yes! All your job applications are tracked in your candidate dashboard. You can see:\n• Application status (Total Applications, Pending, Reviewed, Accepted)"
+      }
     ],
     employer: [
       {
@@ -85,16 +73,12 @@ export default function FAQPage() {
       },
       {
         question: "What are the subscription plans for employers?",
-        answer: "All paid plans include a 7-day free trial. Currently, only the basic plan is being offered, premium plans shall be added in due course."
+        answer: "All paid plans include a 7-day free trial (please check whether the code exists for this). Currently, only the basic plan is being offered, premium plans shall be added in due course."
       },
       {
         question: "How do I manage applications received?",
-        answer: "• View all applications in one dashboard\n• Shortlist or reject\n• Track application status\n"
-      },
-      // {
-      //   question: "Can I schedule interviews through EdTrellis?",
-      //   answer: "Yes! Premium plans include interview scheduling:\n• Send interview invitations\n• Schedule multiple rounds\n• Integration with calendar apps\n• Automated reminders\n• Video interview options\n\nSaves time and improves candidate experience."
-      // }
+        answer: "• View all applications in one dashboard\n• Shortlist or reject\n• Track application status"
+      }
     ],
     account: [
       {
@@ -115,22 +99,22 @@ export default function FAQPage() {
       },
       {
         question: "Will I get a refund if I cancel?",
-        answer: "Refund policy:\n• 7-day free trial: No charges if cancelled within trial period\n• Monthly subscriptions: No refunds for partial months\n• Special circumstances: Contact support for assistance\n"
+        answer: "Refund policy:\n• 7-day free trial: No charges if cancelled within trial period\n• Monthly subscriptions: No refunds for partial months\n• Special circumstances: Contact support for assistance"
       }
     ],
     security: [
       {
         question: "How is my data protected?",
-        answer: "We use multiple layers of security:\n• Secure server infrastructure with regular audits\n• Regular security updates and patches\n• Compliance with data protection regulations\n\nYour privacy and security are our top priorities."
+        answer: "We use multiple layers of security:\n• 256-bit SSL encryption for all data transmission (feature required)\n• Secure server infrastructure with regular audits\n• Two-factor authentication available (feature required)\n• Regular security updates and patches\n• Compliance with data protection regulations\n\nYour privacy and security are our top priorities."
       },
       {
         question: "Who can see my personal information?",
         answer: "We strictly control data access:\n• Only necessary personnel have access\n• Employers see only information you choose to share\n• No selling of personal data to third parties\n• Anonymized data used for analytics\n• Complete transparency in data usage\n\nReview our Privacy Policy for detailed information."
       },
-      // {
-      //   question: "How do I enable two-factor authentication?",
-      //   answer: "Enable 2FA for enhanced security:\n1. Go to 'Account Settings'\n2. Select 'Security'\n3. Click 'Enable Two-Factor Authentication'\n4. Follow setup instructions\n5. Verify with your mobile device\n\nRecommended for all users, especially employers handling sensitive data."
-      // },
+      {
+        question: "Why I am not receiving email notifications?",
+        answer: "If you're not receiving emails:\n1. Check your spam/junk folder\n2. Add notifications@edtrellis.com to contacts\n3. Verify your email address in account settings\n4. Check notification preferences\n5. Ensure mailbox isn't full\n\nYou can also enable SMS notifications as backup."
+      },
       {
         question: "What should I do if I suspect unauthorized access?",
         answer: "If you suspect unauthorized access:\n1. Immediately change your password\n2. Enable two-factor authentication\n3. Check recent account activity\n4. Contact our security team at security@edtrellis.com\n5. Review connected devices and sessions\n\nWe'll help secure your account and investigate."
@@ -147,7 +131,7 @@ export default function FAQPage() {
       },
       {
         question: "Why am I not receiving email notifications?",
-        answer: "If you're not receiving emails:\n1. Check your spam/junk folder\n2. Verify your email address in account settings\n3. Check notification preferences\n4. Ensure mailbox isn't full\n\nYou can also enable SMS notifications as backup."
+        answer: "If you're not receiving emails:\n1. Check your spam/junk folder\n2. Add notifications@edtrellis.com to contacts\n3. Verify your email address in account settings\n4. Check notification preferences\n5. Ensure mailbox isn't full\n\nYou can also enable SMS notifications as backup."
       },
       {
         question: "How do I delete my account permanently?",
@@ -164,10 +148,10 @@ export default function FAQPage() {
 
   const popularFAQs = [
     { question: "How do I apply for jobs?", category: "candidate" },
-    { question: "What are the subscription plans?", category: "employer" },
+    { question: "What are the subscription plans for employers?", category: "employer" },
     { question: "How do I reset my password?", category: "account" },
-    { question: "Is my data secure?", category: "security" },
-    { question: "How do I contact support?", category: "general" },
+    { question: "How is my data protected?", category: "security" },
+    { question: "Why I am not receiving email notifications?", category: "security" },
   ];
 
   return (
@@ -175,42 +159,40 @@ export default function FAQPage() {
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Header */}
-       <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-30 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-30 mb-16">
+          {/* LEFT SIDE - TEXT */}
+          <div>
+            <div className="inline-flex items-center justify-center w-18 h-18 bg-red-50 rounded-full mb-6">
+              <HelpCircle className="h-10 w-10 text-red-700" />
+            </div>
 
-  {/* LEFT SIDE - TEXT */}
-  <div>
-    <div className="inline-flex items-center justify-center w-18 h-18 bg-red-50 rounded-full mb-6">
-      <HelpCircle className="h-10 w-10 text-red-700" />
-    </div>
+            <h1 className="text-6xl font-bold text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h1>
 
-    <h1 className="text-6xl font-bold text-gray-900 mb-4">
-      Frequently Asked Questions
-    </h1>
+            <p className="text-gray-600 max-w-xl">
+              Find quick answers to common questions about using EdTrellis. 
+              Can't find what you're looking for?
+              <a
+                href="/footer/contact"
+                className="text-red-700 font-medium hover:underline ml-1"
+              >
+                Contact our support team
+              </a>
+            </p>
+          </div>
 
-    <p className="text-gray-600 max-w-xl">
-      Find quick answers to common questions about using EdTrellis. 
-      Can't find what you're looking for?
-      <a
-        href="/footer/contact"
-        className="text-red-700 font-medium hover:underline ml-1"
-      >
-        Contact our support team
-      </a>
-    </p>
-  </div>
-
-  {/* RIGHT SIDE - IMAGE */}
- <div className="flex justify-center">
-  <div className="w-95 h-95 rounded-full overflow-hidden shadow-lg">
-    <img
-      src="/photo2.JPG"
-      alt="Education illustration"
-      className="w-full h-full object-cover"
-    />
-  </div>
-</div>
-</div>
-
+          {/* RIGHT SIDE - IMAGE */}
+          <div className="flex justify-center">
+            <div className="w-95 h-95 rounded-full overflow-hidden shadow-lg">
+              <img
+                src="/photo2.JPG"
+                alt="Education illustration"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Search Bar */}
         <div className="mb-10">
@@ -403,10 +385,28 @@ export default function FAQPage() {
                             <div className="text-gray-700 whitespace-pre-line bg-gray-50 rounded-xl p-5">
                               {faq.answer}
                             </div>
-                            {index === 0 && activeCategory === "candidate" && (
-                              <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
+                            
+                            {/* Special notes for specific FAQs */}
+                            {faq.question.includes("professional photo") && (
+                              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                                <p className="text-sm text-yellow-800">
+                                  ⚠️ <span className="font-medium">Note:</span> Professional photo upload feature is currently in development and will be available soon.
+                                </p>
+                              </div>
+                            )}
+                            
+                            {faq.question.includes("subscription plans") && (
+                              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
                                 <p className="text-sm text-blue-800">
-                                  💡 <span className="font-medium">Pro Tip:</span> Complete profiles receive 3x more employer views!
+                                  ℹ️ <span className="font-medium">Note:</span> The 7-day free trial is available for all paid plans. Please verify if the promo code is required during checkout.
+                                </p>
+                              </div>
+                            )}
+                            
+                            {faq.question.includes("data protected") && (
+                              <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                                <p className="text-sm text-green-800">
+                                  🔒 <span className="font-medium">Security Features:</span> 256-bit SSL encryption and Two-factor authentication are planned features that will be implemented soon.
                                 </p>
                               </div>
                             )}
@@ -445,8 +445,18 @@ export default function FAQPage() {
                   <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6">
                     <h3 className="font-bold text-gray-900 mb-3">Still Need Help?</h3>
                     <p className="text-gray-700 mb-4">
-                      Our support team is ready to assist you with any questions not covered in our FAQs.
+                      Our support team is ready to assist you with any questions not covered in our FAQs. Average response time: 72 hours.
                     </p>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-gray-700">
+                        <Phone className="h-4 w-4 text-red-700 mr-2" />
+                        <span>+91 12345 6789</span>
+                      </div>
+                      <div className="flex items-center text-gray-700">
+                        <Mail className="h-4 w-4 text-red-700 mr-2" />
+                        <span>support@edtrellis.com</span>
+                      </div>
+                    </div>
                     <a 
                       href="/footer/contact" 
                       className="inline-flex items-center text-red-700 hover:text-red-800 font-medium"
@@ -459,19 +469,39 @@ export default function FAQPage() {
                   </div>
                   
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
-                    <h3 className="font-bold text-gray-900 mb-3">Browse Documentation</h3>
+                    <h3 className="font-bold text-gray-900 mb-3">Contact Information</h3>
                     <p className="text-gray-700 mb-4">
-                      Check out our comprehensive guides and tutorials for detailed instructions.
+                      Get in touch with us through any of these channels:
                     </p>
-                    <a 
-                      href="#" 
-                      className="inline-flex items-center text-blue-700 hover:text-blue-800 font-medium"
-                    >
-                      View Help Center
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </a>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                          <Phone className="h-4 w-4 text-blue-700" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Phone Number</p>
+                          <p className="font-medium text-gray-900">+91 12345 6789</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                          <Mail className="h-4 w-4 text-blue-700" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Email</p>
+                          <p className="font-medium text-gray-900">support@edtrellis.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                          <MessageSquare className="h-4 w-4 text-blue-700" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Average Response Time</p>
+                          <p className="font-medium text-gray-900">72 hours</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -507,35 +537,6 @@ export default function FAQPage() {
             </div>
           </div>
         </div>
-
-        {/* Statistics */}
-        {/* <div className="mt-12">
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold mb-2">FAQs at a Glance</h3>
-              <p className="text-gray-300">Quick stats about our help resources</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-red-400 mb-2">{Object.values(faqs).flat().length}</div>
-                <p className="text-gray-300">Total Questions</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">{categories.length}</div>
-                <p className="text-gray-300">Categories</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">24h</div>
-                <p className="text-gray-300">Average Response Time</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400 mb-2">95%</div>
-                <p className="text-gray-300">Satisfaction Rate</p>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
       </div>
     </div>
   );

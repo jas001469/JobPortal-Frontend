@@ -1,21 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { Shield, Lock, Eye, Globe, Database, Key, Bell, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shield, Lock, Eye, Globe, Database, Key, Bell, CheckCircle, FileText, Cookie, UserCheck } from "lucide-react";
 
 export default function PrivacyPage() {
   const [activeSection, setActiveSection] = useState<string>("overview");
 
+  // Updated sections in the correct order with Privacy Policy moved here
   const sections = [
     { id: "overview", title: "Overview", icon: Shield },
+    { id: "privacy", title: "Privacy Policy", icon: FileText },
     { id: "collection", title: "Information Collection", icon: Database },
     { id: "usage", title: "How We Use Information", icon: Eye },
     { id: "sharing", title: "Information Sharing", icon: Globe },
     { id: "security", title: "Data Security", icon: Lock },
-    { id: "cookies", title: "Cookies Policy", icon: Key },
-    { id: "rights", title: "Your Rights", icon: CheckCircle },
+    { id: "rights", title: "Your Rights", icon: UserCheck },
     { id: "updates", title: "Policy Updates", icon: Bell },
   ];
+
+  // Scroll to section when activeSection changes
+  useEffect(() => {
+    const element = document.getElementById(activeSection);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeSection]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
@@ -23,40 +32,26 @@ export default function PrivacyPage() {
         
         {/* Header */}
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 mb-16">
+          {/* LEFT SIDE - TEXT */}
+          <div>
+            <div className="inline-flex items-center justify-center w-18 h-18 bg-blue-50 rounded-full mb-6">
+              <Shield className="h-10 w-10 text-blue-700" />
+            </div>
 
-  {/* LEFT SIDE - TEXT */}
-  <div>
-    <div className="inline-flex items-center justify-center w-18 h-18 bg-blue-50 rounded-full mb-6">
-      <Shield className="h-10 w-10 text-blue-700" />
-    </div>
+            <h1 className="text-6xl font-bold text-gray-900 mb-4">
+              Privacy Policy
+            </h1>
 
-    <h1 className="text-6xl font-bold text-gray-900 mb-4">
-      Privacy Policy
-    </h1>
-
-    <p className="text-gray-600 max-w-xl">
-      Last updated:{" "}
-      {new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })}
-    </p>
-  </div>
-
-  {/* RIGHT SIDE - IMAGE */}
-   {/* <div className="flex justify-center">
-  <div className="w-85 h-85 rounded-full overflow-hidden shadow-lg">
-    <img
-      src="/photo6.JPG"
-      alt="Education illustration"
-      className="w-full h-full object-cover"
-    />
-  </div>
-</div> */}
-
-</div>
-
+            <p className="text-gray-600 max-w-xl">
+              Last updated:{" "}
+              {new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
 
         {/* Introduction Card */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-10">
@@ -111,7 +106,29 @@ export default function PrivacyPage() {
                 })}
               </nav>
               
+              {/* Cookie Policy Link */}
               <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center mb-3">
+                    <Cookie className="h-5 w-5 text-blue-700 mr-2" />
+                    <h4 className="font-semibold text-gray-900">Cookie Policy</h4>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Learn about how we use cookies and similar technologies.
+                  </p>
+                  <a 
+                    href="/footer/cookie" 
+                    className="inline-flex items-center text-blue-700 hover:text-blue-800 font-medium text-sm"
+                  >
+                    View Cookie Policy
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="bg-gray-50 rounded-xl p-4">
                   <p className="text-sm text-gray-600 mb-2">
                     Need help understanding our privacy policy?
@@ -186,297 +203,384 @@ export default function PrivacyPage() {
                 </div>
               </section>
 
+              {/* Privacy Policy Section - Moved from Terms & Conditions */}
+              <section id="privacy" className="scroll-mt-24 mb-12">
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">1</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Privacy Policy</h3>
+                </div>
+                
+                <div className="ml-14">
+                  <div className="space-y-6">
+                    <p className="text-gray-700">
+                      Your acceptance of these Terms amounts to your consent for use of the identity information provided by you for the use of such identity information. The Company is committed to protect the data submitted by the users on the Portal and shall make the best of efforts to ensure the same. However, in no event will the Company be liable for any expense, loss or damage including, without limitation, indirect or consequential loss or damage, or any expense, loss or damage whatsoever arising from use, or loss of use, of data, arising out of or in connection with the use of this Portal.
+                    </p>
+                    
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                      <p className="text-gray-700">
+                        Your use of our Services is also subject to our Cookie Policy, which covers how we collect, use, share, and store your personal information through cookies and similar technologies. This Portal does not automatically capture any specific personal information from you, (like name, phone number or e-mail address), that allows us to identify you individually.
+                      </p>
+                    </div>
+                    
+                    <p className="text-gray-700">
+                      Your email address will only be used for the purpose for which you have provided it. Your email address will not be used for any other purpose, and will not be disclosed, without your consent. Any details like e-mail ID, mobile number etc, provided by you are personal to you and you will be responsible for the confidentiality and use of credentials for all activities that are conducted through your account. The Company will not be liable for any harm or damage caused owing to the disclosure of your credentials or use by anyone else.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
               {/* Information Collection Section */}
               <section id="collection" className="scroll-mt-24 mb-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Database className="h-6 w-6 text-blue-700 mr-3" />
-                  Information We Collect
-                </h3>
-                
-                <div className="space-y-6">
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Information You Provide</h4>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                        <span>Account Information: Name, email address, phone number, password</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                        <span>Profile Information: Resume/CV, work experience, education, skills, preferences</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                        <span>Communication Data: Messages, emails, and other communications</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                        <span>Payment Information: For premium services (processed through secure payment gateways)</span>
-                      </li>
-                    </ul>
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">2</span>
                   </div>
-                  
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-                    <h4 className="font-semibold text-blue-900 mb-3">Automatically Collected Information</h4>
-                    <p className="text-blue-800 mb-3">
-                      When you use our services, we automatically collect certain information, including:
-                    </p>
-                    <ul className="space-y-2 text-blue-800">
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
-                        <span>Device Information: IP address, browser type, operating system</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
-                        <span>Usage Data: Pages visited, time spent, click patterns</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
-                        <span>Location Data: General location based on IP address</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
-                        <span>Cookies and Tracking Technologies</span>
-                      </li>
-                    </ul>
+                  <h3 className="text-xl font-bold text-gray-900">Information We Collect</h3>
+                </div>
+                
+                <div className="ml-14">
+                  <div className="space-y-6">
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Information You Provide</h4>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>Account Information: Name, email address, phone number, password</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>Profile Information: Resume/CV, work experience, education, skills, preferences</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>Communication Data: Messages, emails, and other communications</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>Payment Information: For premium services (processed through secure payment gateways)</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+                      <h4 className="font-semibold text-blue-900 mb-3">Automatically Collected Information</h4>
+                      <p className="text-blue-800 mb-3">
+                        When you use our services, we automatically collect certain information, including:
+                      </p>
+                      <ul className="space-y-2 text-blue-800">
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
+                          <span>Device Information: IP address, browser type, operating system</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
+                          <span>Usage Data: Pages visited, time spent, click patterns</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3"></div>
+                          <span>Location Data: General location based on IP address</span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </section>
 
               {/* How We Use Information Section */}
               <section id="usage" className="scroll-mt-24 mb-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Eye className="h-6 w-6 text-blue-700 mr-3" />
-                  How We Use Your Information
-                </h3>
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">3</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">How We Use Your Information</h3>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-green-50 border border-green-100 rounded-xl p-6">
-                    <h4 className="font-semibold text-green-900 mb-3">Service Provision</h4>
-                    <ul className="space-y-2 text-green-800">
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-                        <span>Create and manage your account</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-                        <span>Match candidates with job opportunities</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-                        <span>Process payments for premium services</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-purple-50 border border-purple-100 rounded-xl p-6">
-                    <h4 className="font-semibold text-purple-900 mb-3">Communication</h4>
-                    <ul className="space-y-2 text-purple-800">
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
-                        <span>Send important service updates</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
-                        <span>Respond to your inquiries</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
-                        <span>Send job alerts and recommendations</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-6">
-                    <h4 className="font-semibold text-orange-900 mb-3">Improvement & Analytics</h4>
-                    <ul className="space-y-2 text-orange-800">
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
-                        <span>Analyze usage patterns</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
-                        <span>Improve our services</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
-                        <span>Develop new features</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-red-50 border border-red-100 rounded-xl p-6">
-                    <h4 className="font-semibold text-red-900 mb-3">Security & Compliance</h4>
-                    <ul className="space-y-2 text-red-800">
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
-                        <span>Detect and prevent fraud</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
-                        <span>Comply with legal obligations</span>
-                      </li>
-                      <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
-                        <span>Enforce our terms and conditions</span>
-                      </li>
-                    </ul>
+                <div className="ml-14">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-green-50 border border-green-100 rounded-xl p-6">
+                      <h4 className="font-semibold text-green-900 mb-3">Service Provision</h4>
+                      <ul className="space-y-2 text-green-800">
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span>Create and manage your account</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span>Match candidates with job opportunities</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span>Process payments for premium services</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-6">
+                      <h4 className="font-semibold text-purple-900 mb-3">Communication</h4>
+                      <ul className="space-y-2 text-purple-800">
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
+                          <span>Send important service updates</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
+                          <span>Respond to your inquiries</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-purple-600 mr-2 flex-shrink-0" />
+                          <span>Send job alerts and recommendations</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-orange-50 border border-orange-100 rounded-xl p-6">
+                      <h4 className="font-semibold text-orange-900 mb-3">Improvement & Analytics</h4>
+                      <ul className="space-y-2 text-orange-800">
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
+                          <span>Analyze usage patterns</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
+                          <span>Improve our services</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-orange-600 mr-2 flex-shrink-0" />
+                          <span>Develop new features</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-6">
+                      <h4 className="font-semibold text-red-900 mb-3">Security & Compliance</h4>
+                      <ul className="space-y-2 text-red-800">
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
+                          <span>Detect and prevent fraud</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
+                          <span>Comply with legal obligations</span>
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
+                          <span>Enforce our terms and conditions</span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </section>
 
               {/* Information Sharing Section */}
               <section id="sharing" className="scroll-mt-24 mb-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Globe className="h-6 w-6 text-blue-700 mr-3" />
-                  Information Sharing and Disclosure
-                </h3>
-                
-                <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-6 mb-6">
-                  <h4 className="font-semibold text-yellow-900 mb-3">We Do NOT Sell Your Data</h4>
-                  <p className="text-yellow-800">
-                    We do not sell, rent, or trade your personal information to third parties for their marketing purposes.
-                  </p>
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">4</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Information Sharing and Disclosure</h3>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="bg-white border border-gray-200 rounded-xl p-5">
-                    <h4 className="font-semibold text-gray-900 mb-2">With Your Consent</h4>
-                    <p className="text-gray-700">
-                      We share information when you give us explicit permission to do so, such as when you apply for a job and share your profile with employers.
+                <div className="ml-14">
+                  <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-6 mb-6">
+                    <h4 className="font-semibold text-yellow-900 mb-3">We Do NOT Sell Your Data</h4>
+                    <p className="text-yellow-800">
+                      We do not sell, rent, or trade your personal information to third parties for their marketing purposes.
                     </p>
                   </div>
                   
-                  <div className="bg-white border border-gray-200 rounded-xl p-5">
-                    <h4 className="font-semibold text-gray-900 mb-2">Service Providers</h4>
-                    <p className="text-gray-700">
-                      We share information with trusted third-party service providers who assist us in operating our platform, conducting our business, or servicing you, as long as those parties agree to keep this information confidential.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-xl p-5">
-                    <h4 className="font-semibold text-gray-900 mb-2">Legal Requirements</h4>
-                    <p className="text-gray-700">
-                      We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency).
-                    </p>
+                  <div className="space-y-4">
+                    <div className="bg-white border border-gray-200 rounded-xl p-5">
+                      <h4 className="font-semibold text-gray-900 mb-2">With Your Consent</h4>
+                      <p className="text-gray-700">
+                        We share information when you give us explicit permission to do so, such as when you apply for a job and share your profile with employers.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white border border-gray-200 rounded-xl p-5">
+                      <h4 className="font-semibold text-gray-900 mb-2">Service Providers</h4>
+                      <p className="text-gray-700">
+                        We share information with trusted third-party service providers who assist us in operating our platform, conducting our business, or servicing you, as long as those parties agree to keep this information confidential.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white border border-gray-200 rounded-xl p-5">
+                      <h4 className="font-semibold text-gray-900 mb-2">Legal Requirements</h4>
+                      <p className="text-gray-700">
+                        We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency).
+                      </p>
+                    </div>
                   </div>
                 </div>
               </section>
 
               {/* Data Security Section */}
               <section id="security" className="scroll-mt-24 mb-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Lock className="h-6 w-6 text-blue-700 mr-3" />
-                  Data Security
-                </h3>
-                
-                <div className="bg-gray-900 text-white rounded-2xl p-8 mb-6">
-                  <h4 className="text-xl font-bold mb-4">Our Security Measures</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h5 className="font-semibold mb-2 text-blue-300">Technical Security</h5>
-                      <ul className="space-y-2 text-gray-300">
-                        <li>• Encryption of sensitive data</li>
-                        <li>• Regular security audits</li>
-                        <li>• Secure server infrastructure</li>
-                        <li>• DDoS protection</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h5 className="font-semibold mb-2 text-blue-300">Administrative Security</h5>
-                      <ul className="space-y-2 text-gray-300">
-                        <li>• Limited access to personal data</li>
-                        <li>• Employee training on data protection</li>
-                        <li>• Regular policy reviews</li>
-                        <li>• Incident response plan</li>
-                      </ul>
-                    </div>
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">5</span>
                   </div>
+                  <h3 className="text-xl font-bold text-gray-900">Data Security</h3>
                 </div>
                 
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <p className="text-gray-700">
-                    While we implement appropriate technical and organisational measures to protect your personal information, no security system is impenetrable. We cannot guarantee the security of our databases, nor can we guarantee that information you supply will not be intercepted while being transmitted to us over the Internet.
-                  </p>
+                <div className="ml-14">
+                  <div className="bg-gray-900 text-white rounded-2xl p-8 mb-6">
+                    <h4 className="text-xl font-bold mb-4">Our Security Measures</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h5 className="font-semibold mb-2 text-blue-300">Technical Security</h5>
+                        <ul className="space-y-2 text-gray-300">
+                          <li>• Encryption of sensitive data</li>
+                          <li>• Regular security audits</li>
+                          <li>• Secure server infrastructure</li>
+                          <li>• DDoS protection</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold mb-2 text-blue-300">Administrative Security</h5>
+                        <ul className="space-y-2 text-gray-300">
+                          <li>• Limited access to personal data</li>
+                          <li>• Employee training on data protection</li>
+                          <li>• Regular policy reviews</li>
+                          <li>• Incident response plan</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <p className="text-gray-700">
+                      While we implement appropriate technical and organisational measures to protect your personal information, no security system is impenetrable. We cannot guarantee the security of our databases, nor can we guarantee that information you supply will not be intercepted while being transmitted to us over the Internet.
+                    </p>
+                  </div>
                 </div>
               </section>
 
               {/* Your Rights Section */}
               <section id="rights" className="scroll-mt-24 mb-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <CheckCircle className="h-6 w-6 text-blue-700 mr-3" />
-                  Your Rights and Choices
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Access and Control</h4>
-                    <ul className="space-y-3">
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-blue-700 font-bold">✓</span>
-                        </div>
-                        <span className="text-gray-700">Access your personal information</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-blue-700 font-bold">✓</span>
-                        </div>
-                        <span className="text-gray-700">Correct inaccurate data</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-blue-700 font-bold">✓</span>
-                        </div>
-                        <span className="text-gray-700">Request deletion of your data</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-blue-700 font-bold">✓</span>
-                        </div>
-                        <span className="text-gray-700">Object to processing of your data</span>
-                      </li>
-                    </ul>
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">6</span>
                   </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Communication Preferences</h4>
-                    <ul className="space-y-3">
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-green-700 font-bold">✉</span>
-                        </div>
-                        <span className="text-gray-700">Manage email notifications</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-green-700 font-bold">🔔</span>
-                        </div>
-                        <span className="text-gray-700">Control job alert frequency</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-green-700 font-bold">⚙</span>
-                        </div>
-                        <span className="text-gray-700">Adjust privacy settings</span>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                          <span className="text-green-700 font-bold">📱</span>
-                        </div>
-                        <span className="text-gray-700">Opt-out of marketing communications</span>
-                      </li>
-                    </ul>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Your Rights and Choices</h3>
                 </div>
                 
-                <div className="mt-6 bg-blue-50 rounded-xl p-6">
-                  <p className="text-blue-800">
-                    To exercise any of these rights, please contact us at{' '}
-                    <a href="mailto:privacy@edtrellis.com" className="text-blue-700 font-medium hover:underline">
-                      privacy@edtrellis.com
-                    </a>
-                  </p>
+                <div className="ml-14">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Access and Control</h4>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-blue-700 font-bold">✓</span>
+                          </div>
+                          <span className="text-gray-700">Access your personal information</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-blue-700 font-bold">✓</span>
+                          </div>
+                          <span className="text-gray-700">Correct inaccurate data</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-blue-700 font-bold">✓</span>
+                          </div>
+                          <span className="text-gray-700">Request deletion of your data</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-blue-700 font-bold">✓</span>
+                          </div>
+                          <span className="text-gray-700">Object to processing of your data</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Communication Preferences</h4>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-green-700 font-bold">✉</span>
+                          </div>
+                          <span className="text-gray-700">Manage email notifications</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-green-700 font-bold">🔔</span>
+                          </div>
+                          <span className="text-gray-700">Control job alert frequency</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-green-700 font-bold">⚙</span>
+                          </div>
+                          <span className="text-gray-700">Adjust privacy settings</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span className="text-green-700 font-bold">📱</span>
+                          </div>
+                          <span className="text-gray-700">Opt-out of marketing communications</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 rounded-xl p-6">
+                    <p className="text-blue-800">
+                      To exercise any of these rights, please contact us at{' '}
+                      <a href="mailto:privacy@edtrellis.com" className="text-blue-700 font-medium hover:underline">
+                        privacy@edtrellis.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Policy Updates Section */}
+              <section id="updates" className="scroll-mt-24 mb-12">
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <span className="font-bold text-blue-700">7</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Policy Updates</h3>
+                </div>
+                
+                <div className="ml-14">
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="flex items-start mb-4">
+                      <Bell className="h-6 w-6 text-blue-700 mr-3 flex-shrink-0" />
+                      <p className="text-gray-700">
+                        We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">How We Notify You</h4>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>We will post the updated policy on this page with a new "Last updated" date</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>For significant changes, we may provide additional notice (such as email notification)</span>
+                        </li>
+                        <li className="flex items-start">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                          <span>Your continued use of our services after changes constitutes acceptance of the updated policy</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <p className="text-sm text-gray-500 mt-4">
+                      We encourage you to review this Privacy Policy periodically to stay informed about how we are protecting your information.
+                    </p>
+                  </div>
                 </div>
               </section>
 

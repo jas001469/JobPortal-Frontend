@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -64,28 +63,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen max-w-96 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-2">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl px-8 mt-22 pt-16 pb-10 relative">
-        {/* CIRCULAR IMAGE AT TOP CENTER */}
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
-          <div className="relative w-40 h-40  rounded-full overflow-hidden border-4 border-white shadow-xl ring-4 ring-red-100">
-            <Image
-              src="/photo4.JPG"
-              alt="Profile"
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl px-8 py-10">
         {/* HEADER */}
-        <div className="text-center mt-14 mb-8">
+        <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             Create Account
           </h2>
           <p className="text-gray-500">
-            Sign up to get started
+            Sign up to get started with EdTrellis
           </p>
         </div>
 
@@ -154,6 +140,17 @@ export default function RegisterPage() {
               required
             />
           </div>
+
+          {/* <div className="relative">
+            <input
+              name="phone"
+              type="tel"
+              placeholder="Phone Number (Optional)"
+              value={form.phone}
+              onChange={handleChange}
+              className="w-full border border-gray-300 bg-gray-50 text-gray-800 placeholder-gray-400 focus:border-red-700 focus:ring-2 focus:ring-red-700 px-4 py-3 rounded-xl outline-none transition"
+            />
+          </div> */}
 
           <div className="relative">
             <input

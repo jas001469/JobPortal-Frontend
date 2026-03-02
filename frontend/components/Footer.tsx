@@ -37,18 +37,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-12">
           
           {/* Company Info & Logo */}
-         <div className="space-y-6">
-  <div className="flex items-center space-x-1">
-    {/* Logo Image - Larger version */}
-    <div className="w-25 h-25 rounded-xl flex items-center justify-center overflow-hidden">
-      <img 
-        src="/edfooter1.png" 
-        alt="EdTrellis Logo" 
-        className="w-full h-full object-contain"
-      />
-    </div>
-    <span className="text-4xl font-bold">EdTrellis</span>
-  </div>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-1">
+              {/* Logo Image - Larger version */}
+              <div className="w-25 h-25 rounded-xl flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/edfooter1.png" 
+                  alt="EdTrellis Logo" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="text-4xl font-bold">EdTrellis</span>
+            </div>
             
             <p className="text-gray-400 text-sm leading-relaxed">
               Connecting talent with opportunity. Find your dream job or the perfect candidate with our advanced hiring platform.
@@ -166,6 +166,15 @@ export default function Footer() {
               </li>
               <li>
                 <Link 
+                  href="/footer/cookie" 
+                  className="text-gray-400 hover:text-white flex items-center transition group"
+                >
+                  <ChevronRight size={16} className="mr-2 opacity-0 group-hover:opacity-100 transition" />
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link 
                   href="/footer/faq" 
                   className="text-gray-400 hover:text-white flex items-center transition group"
                 >
@@ -182,15 +191,6 @@ export default function Footer() {
                   Contact Support
                 </Link>
               </li>
-              {/* <li>
-                <Link 
-                  href="/" 
-                  className="text-gray-400 hover:text-white flex items-center transition group"
-                >
-                  <ChevronRight size={16} className="mr-2 opacity-0 group-hover:opacity-100 transition" />
-                  Cookie Policy
-                </Link>
-              </li> */}
             </ul>
           </div>
 
@@ -241,19 +241,6 @@ export default function Footer() {
                 <Mail size={18} className="text-red-500 mt-1 shrink-0" />
                 <span className="text-gray-400 text-sm">support@edtrellis.com</span>
               </div>
-              
-              {/* <div className="flex items-start space-x-3">
-                <Phone size={18} className="text-red-500 mt-1 shrink-0" />
-                <span className="text-gray-400 text-sm">+91 123 456 7890</span>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <MapPin size={18} className="text-red-500 mt-1 shrink-0" />
-                <span className="text-gray-400 text-sm">
-                  204-A, West End Road Meerut Cantt<br />
-                  Uttar Pradesh, India (250001)
-                </span>
-              </div> */}
             </div>
           </div>
         </div>
