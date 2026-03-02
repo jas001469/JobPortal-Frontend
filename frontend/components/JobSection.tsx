@@ -56,7 +56,7 @@ export default function JobsSection() {
   };
 
   return (
-    <section id="jobs" className="py-20 bg-zinc-100">
+    <section id="jobs" className="py-20 -mb-20 bg-zinc-100">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="text-center mb-12">

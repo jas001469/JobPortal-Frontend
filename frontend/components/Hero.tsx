@@ -235,7 +235,7 @@ export default function Hero() {
               <br />
               Education Sector 
               <br />
-              <span className="text-red-700"> EdTrellis</span>
+              {/* <span className="text-red-700"> EdTrellis</span> */}
             </h1>
             <p className="text-gray-600 mb-10 max-w-md">
               Find a job in educational, research or training institutes on a single platform!

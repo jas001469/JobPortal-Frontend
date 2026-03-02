@@ -242,7 +242,7 @@ export default function Footer() {
                 <span className="text-gray-400 text-sm">support@edtrellis.com</span>
               </div>
               
-              <div className="flex items-start space-x-3">
+              {/* <div className="flex items-start space-x-3">
                 <Phone size={18} className="text-red-500 mt-1 shrink-0" />
                 <span className="text-gray-400 text-sm">+91 123 456 7890</span>
               </div>
@@ -253,7 +253,7 @@ export default function Footer() {
                   204-A, West End Road Meerut Cantt<br />
                   Uttar Pradesh, India (250001)
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
