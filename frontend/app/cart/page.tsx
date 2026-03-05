@@ -585,7 +585,7 @@ export default function CartPage() {
                 </h2>
 
                 {/* Promo Code */}
-                {/* <div className="mb-6">
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Promo Code
                   </label>
@@ -611,7 +611,7 @@ export default function CartPage() {
                     </button>
                   </div>
                   
-                  {!promoApplied && (
+                  {/* {!promoApplied && (
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                       <p className="text-xs font-medium text-blue-800 mb-2">Available Promo Codes:</p>
                       <div className="space-y-1">
@@ -629,7 +629,7 @@ export default function CartPage() {
                         </p>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   
                   {promoApplied && appliedPromoDetails && (
                     <div className="mt-3 p-3 bg-green-50 rounded-lg">
@@ -639,7 +639,7 @@ export default function CartPage() {
                       </p>
                     </div>
                   )}
-                </div> */}
+                </div>
 
                 {/* Billing Summary */}
                 <div className="mb-6">
