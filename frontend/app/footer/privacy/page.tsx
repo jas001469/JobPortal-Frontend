@@ -598,14 +598,14 @@ export default function PrivacyPage() {
                         support@edtrellis.com
                       </a>
                     </div>
-                    <div>
+                    {/* <div>
                       <h4 className="font-semibold text-gray-900 mb-2">Mailing Address</h4>
                       <p className="text-gray-700">
                         EdTrellis Global Private Limited<br />
                         204-A, West End Road Meerut Cantt<br />
                         Uttar Pradesh, India (250001)
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

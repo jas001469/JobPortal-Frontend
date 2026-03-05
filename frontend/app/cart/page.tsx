@@ -22,7 +22,7 @@ interface PromoConfig {
   type: string;
 }
 
-// Promo codes directly in code (temporary fix)
+// Promo codes
 const PROMO_CODES: Record<string, PromoConfig> = {
   "EDTRELLISBASIC": {
     plan: "Recruit Basic",
@@ -45,6 +45,7 @@ export default function CartPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activating, setActivating] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
@@ -60,34 +61,6 @@ export default function CartPage() {
     "Standard": { monthly: 0, yearly: 0 },
     "Advantage": { monthly: 149, yearly: 1430 },
     "Premium": { monthly: 249, yearly: 2390 },
-  };
-
-  // Plan perks mapping
-  const planPerks = {
-    "Recruit Basic": {
-      jobPostings: 30,
-      featuredJobs: 3,
-      jobDisplayDays: 15,
-      emailSupport: false,
-      employeeManagement: false,
-      hrFeatures: false
-    },
-    "Talent Pro": {
-      jobPostings: 40,
-      featuredJobs: 5,
-      jobDisplayDays: 30,
-      emailSupport: true,
-      employeeManagement: false,
-      hrFeatures: false
-    },
-    "HR Master": {
-      jobPostings: 50,
-      featuredJobs: 10,
-      jobDisplayDays: 60,
-      emailSupport: true,
-      employeeManagement: true,
-      hrFeatures: true
-    }
   };
 
   // Load cart data
@@ -147,15 +120,6 @@ export default function CartPage() {
     fetchUser();
   }, []);
 
-  // Save cart to localStorage
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      localStorage.setItem("subscriptionCart", JSON.stringify(cartItems));
-    } else {
-      localStorage.removeItem("subscriptionCart");
-    }
-  }, [cartItems]);
-
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     setCartItems(items =>
@@ -164,15 +128,9 @@ export default function CartPage() {
       )
     );
     
-    // Clear promo if applied when changing quantity
     if (promoApplied) {
       setPromoApplied(false);
       setAppliedPromoDetails(null);
-      setPromoMessage({
-        type: "error",
-        text: "Promo code removed due to quantity change"
-      });
-      setTimeout(() => setPromoMessage(null), 3000);
     }
   };
 
@@ -195,22 +153,15 @@ export default function CartPage() {
       })
     );
     
-    // Clear promo if applied when changing billing
     if (promoApplied) {
       setPromoApplied(false);
       setAppliedPromoDetails(null);
-      setPromoMessage({
-        type: "error",
-        text: "Promo code removed due to plan change"
-      });
-      setTimeout(() => setPromoMessage(null), 3000);
     }
   };
 
   const removeItem = (id: string) => {
     setCartItems(items => items.filter(item => item.id !== id));
     
-    // Clear promo if cart becomes empty or if removed item was the promo plan
     if (promoApplied && appliedPromoDetails) {
       const remainingItems = cartItems.filter(item => item.id !== id);
       const promoPlanStillExists = remainingItems.some(
@@ -246,7 +197,6 @@ export default function CartPage() {
 
     setApplyingPromo(true);
     
-    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
     const promoConfig = PROMO_CODES[upperCode];
@@ -261,7 +211,6 @@ export default function CartPage() {
       return;
     }
 
-    // Check if the plan exists in cart
     const planInCart = cartItems.some(item => item.name === promoConfig.plan);
     
     if (!planInCart) {
@@ -274,7 +223,6 @@ export default function CartPage() {
       return;
     }
 
-    // Check if trying to apply multiple promos
     if (promoApplied) {
       setPromoMessage({
         type: "error",
@@ -285,7 +233,6 @@ export default function CartPage() {
       return;
     }
 
-    // Apply the promo
     setPromoApplied(true);
     setAppliedPromoDetails(promoConfig);
     setPromoMessage({
@@ -293,90 +240,83 @@ export default function CartPage() {
       text: `🎉 ${promoConfig.plan} plan is now FREE! You've unlocked all features.`
     });
     
-    // Clear the input
     setPromoCode("");
     setApplyingPromo(false);
     
-    // Auto-hide message after 5 seconds
     setTimeout(() => setPromoMessage(null), 5000);
   };
 
-  // Calculate totals with promo
   const calculateSubtotal = () => {
     if (!promoApplied || !appliedPromoDetails) {
       return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     }
 
-    // Apply 100% discount only to the specific plan
     return cartItems.reduce((sum, item) => {
       if (item.name === appliedPromoDetails.plan) {
-        return sum; // Add 0 for the promo plan
+        return sum;
       }
       return sum + item.price * item.quantity;
     }, 0);
   };
 
   const subtotal = calculateSubtotal();
-  const tax = subtotal * 0.18; // 18% GST only on non-promo items
+  const tax = subtotal * 0.18;
   const total = subtotal + tax;
 
-  const handleCheckout = async () => {
+  const handleActivateSubscription = async () => {
     if (!user) {
       router.push("/auth/login?redirect=cart");
       return;
     }
 
-    // Validate cart has items
     if (cartItems.length === 0) {
       alert("Your cart is empty");
       return;
     }
 
-    // If promo is applied and total is zero
-    if (promoApplied && total === 0 && appliedPromoDetails) {
-      try {
-        // Here you would typically make an API call to activate the subscription
-        // For now, we'll simulate it
-        setLoading(true);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Get the plan details
-        const planName = appliedPromoDetails.plan;
-        const planPerk = planPerks[planName as keyof typeof planPerks];
-        
-        // Store subscription info in localStorage (temporary until backend is ready)
-        const subscriptionData = {
-          plan: planName,
-          status: "active",
-          perks: planPerk,
-          activatedAt: new Date().toISOString(),
-          promoCode: true
-        };
-        
-        localStorage.setItem("activeSubscription", JSON.stringify(subscriptionData));
-        
+    if (!promoApplied || !appliedPromoDetails) {
+      alert("Please apply a promo code first");
+      return;
+    }
+
+    setActivating(true);
+    
+    try {
+      // Call backend API to activate subscription
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/employer/subscription/activate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          planName: appliedPromoDetails.plan,
+          promoCode: Object.keys(PROMO_CODES).find(
+            key => PROMO_CODES[key] === appliedPromoDetails
+          )
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
         // Clear the cart
         localStorage.removeItem("subscriptionCart");
         
-        // Show success message with perks
-        alert(`🎉 Your ${planName} subscription has been activated!\n\nYou can now post up to ${planPerk.jobPostings} jobs with ${planPerk.featuredJobs} featured jobs.`);
+        // Show success message
+        alert(`🎉 Your ${appliedPromoDetails.plan} subscription has been activated!`);
         
         // Redirect to post job page
         router.push("/employer/post-job");
-        
-      } catch (error) {
-        console.error("Error activating subscription:", error);
-        alert("Failed to activate subscription. Please try again.");
-      } finally {
-        setLoading(false);
+      } else {
+        alert(data.message || "Failed to activate subscription");
       }
-      return;
+    } catch (error) {
+      console.error("Error activating subscription:", error);
+      alert("Failed to activate subscription. Please try again.");
+    } finally {
+      setActivating(false);
     }
-    
-    // For non-zero totals, show payment gateway message
-    alert("Payment gateway will be integrated soon. For now, please use a promo code for free access.");
   };
 
   const formatPrice = (price: number) => {
@@ -388,24 +328,12 @@ export default function CartPage() {
     }).format(price);
   };
 
-  const calculateYearlySavings = (item: CartItem) => {
-    if (item.billing === "yearly") {
-      const pricing = planPricing[item.name as keyof typeof planPricing];
-      if (pricing) {
-        const monthlyTotal = pricing.monthly * 12;
-        const savings = monthlyTotal - pricing.yearly;
-        return savings;
-      }
-    }
-    return 0;
-  };
-
-  if (loading) {
+  if (loading || activating) {
     return (
       <div className="min-h-screen bg-gray-50 pt-24 pb-12 flex justify-center items-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Processing...</p>
+          <p className="mt-4 text-gray-600">{activating ? "Activating subscription..." : "Loading cart..."}</p>
         </div>
       </div>
     );
@@ -471,7 +399,6 @@ export default function CartPage() {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => {
-                const yearlySavings = calculateYearlySavings(item);
                 const pricing = planPricing[item.name as keyof typeof planPricing];
                 const isPromoPlan = promoApplied && appliedPromoDetails && item.name === appliedPromoDetails.plan;
                 
@@ -556,16 +483,6 @@ export default function CartPage() {
                                 )}
                               </button>
                             </div>
-                            
-                            {/* Savings Message */}
-                            {item.billing === "yearly" && yearlySavings > 0 && !isPromoPlan && (
-                              <p className="text-sm text-green-600 mt-3 flex items-center">
-                                <span className="bg-green-100 px-2 py-0.5 rounded-full text-xs font-medium mr-2">
-                                  Save {formatPrice(yearlySavings)}/year
-                                </span>
-                                Compared to monthly billing
-                              </p>
-                            )}
                           </div>
                         )}
 
@@ -603,7 +520,6 @@ export default function CartPage() {
                           </div>
 
                           <div className="flex items-center space-x-6">
-                            {/* Quantity Controls */}
                             <div className="flex items-center border border-gray-200 rounded-lg">
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -622,7 +538,6 @@ export default function CartPage() {
                               </button>
                             </div>
 
-                            {/* Price */}
                             <div className="text-right">
                               {isPromoPlan ? (
                                 <>
@@ -651,7 +566,6 @@ export default function CartPage() {
                 );
               })}
 
-              {/* Clear Cart Button */}
               <div className="flex justify-end">
                 <button
                   onClick={clearCart}
@@ -697,7 +611,6 @@ export default function CartPage() {
                     </button>
                   </div>
                   
-                  {/* Available Promo Codes Info */}
                   {!promoApplied && (
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                       <p className="text-xs font-medium text-blue-800 mb-2">Available Promo Codes:</p>
@@ -781,69 +694,20 @@ export default function CartPage() {
                       Including all taxes
                     </p>
                   </div>
-
-                  {/* Promo Savings Summary */}
-                  {promoApplied && appliedPromoDetails && (
-                    <div className="bg-green-50 rounded-lg p-3 mt-4">
-                      <p className="text-xs text-green-800 font-medium mb-1">Promo Code Applied</p>
-                      <p className="text-sm text-green-700">
-                        You're saving {formatPrice(
-                          cartItems
-                            .filter(item => item.name === appliedPromoDetails.plan)
-                            .reduce((sum, item) => sum + item.price * item.quantity, 0)
-                        )}/month with your promo code!
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Annual Equivalent */}
-                  {cartItems.some(item => item.billing === "yearly") && (
-                    <div className="bg-green-50 rounded-lg p-3 mt-4">
-                      <p className="text-xs text-green-800 font-medium mb-1">Annual Billing Advantage</p>
-                      <p className="text-sm text-green-700">
-                        You're saving approximately{' '}
-                        {formatPrice(
-                          cartItems.reduce((sum, item) => {
-                            if (item.billing === "yearly") {
-                              const pricing = planPricing[item.name as keyof typeof planPricing];
-                              if (pricing) {
-                                return sum + ((pricing.monthly * 12) - pricing.yearly) * item.quantity;
-                              }
-                            }
-                            return sum;
-                          }, 0)
-                        )}{' '}
-                        per year with annual plans
-                      </p>
-                    </div>
-                  )}
                 </div>
 
-                {/* Checkout Button */}
+                {/* Activate Button */}
                 <button
-                  onClick={handleCheckout}
-                  disabled={cartItems.length === 0 || (total > 0 && !promoApplied)}
+                  onClick={handleActivateSubscription}
+                  disabled={!promoApplied || cartItems.length === 0}
                   className={`w-full py-4 rounded-xl font-medium mb-4 flex items-center justify-center transition ${
-                    cartItems.length === 0 || (total > 0 && !promoApplied)
+                    !promoApplied || cartItems.length === 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : total === 0 && promoApplied
-                      ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-                      : "bg-red-700 hover:bg-red-800 text-white cursor-pointer"
+                      : "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
                   }`}
                 >
-                  {total === 0 && promoApplied ? (
-                    <>
-                      <Gift className="w-5 h-5 mr-2" />
-                      Activate Free Subscription
-                    </>
-                  ) : total > 0 && !promoApplied ? (
-                    <>
-                      <Lock className="w-5 h-5 mr-2" />
-                      Payment Gateway Coming Soon
-                    </>
-                  ) : (
-                    "Proceed to Checkout"
-                  )}
+                  <Gift className="w-5 h-5 mr-2" />
+                  Activate Free Subscription
                 </button>
 
                 {/* Payment Methods */}
