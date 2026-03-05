@@ -560,7 +560,7 @@ const employerPlans = [
     popular: true,
     discount: null,
     features: [
-      { label: "40 job postings", enabled: true },
+      { label: "2 job postings", enabled: true },
       { label: "5 featured jobs", enabled: true },
       { label: "Job displayed for 30 days", enabled: true },
       { label: "Email support", enabled: true },
