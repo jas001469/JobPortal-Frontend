@@ -585,7 +585,7 @@ export default function CartPage() {
                 </h2>
 
                 {/* Promo Code */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Promo Code
                   </label>
@@ -639,7 +639,7 @@ export default function CartPage() {
                       </p>
                     </div>
                   )}
-                </div>
+                </div> */}
 
                 {/* Billing Summary */}
                 <div className="mb-6">
