@@ -8,7 +8,7 @@ import { ExternalLink, Link as LinkIcon, Globe, Briefcase, ChevronRight, FileTex
 // CONFIGURATION - TOGGLE SUBSCRIPTION CHECK
 // ============================================
 const SUBSCRIPTION_CONFIG = {
-  ENABLED: false, // Set to false to disable subscription checking
+  ENABLED: true, // Set to false to disable subscription checking
   // When disabled, all employers can post jobs without subscription
   // When enabled, employers need active subscription to post jobs
 };
