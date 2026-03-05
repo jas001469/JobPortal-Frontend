@@ -29,10 +29,10 @@ export default function CartPage() {
   const [user, setUser] = useState<any>(null);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
+  const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoMessage, setPromoMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [appliedPromoDetails, setAppliedPromoDetails] = useState<PromoConfig | null>(null);
   const [promoCodes, setPromoCodes] = useState<Record<string, PromoConfig>>({});
-  const [applyingPromo, setApplyingPromo] = useState(false);
 
   // Load promo codes from environment variables
   useEffect(() => {
@@ -80,34 +80,6 @@ export default function CartPage() {
     "Standard": { monthly: 0, yearly: 0 },
     "Advantage": { monthly: 149, yearly: 1430 },
     "Premium": { monthly: 249, yearly: 2390 },
-  };
-
-  // Plan perks mapping
-  const planPerks = {
-    "Recruit Basic": {
-      jobPostings: 30,
-      featuredJobs: 3,
-      jobDisplayDays: 15,
-      emailSupport: false,
-      employeeManagement: false,
-      hrFeatures: false
-    },
-    "Talent Pro": {
-      jobPostings: 40,
-      featuredJobs: 5,
-      jobDisplayDays: 30,
-      emailSupport: true,
-      employeeManagement: false,
-      hrFeatures: false
-    },
-    "HR Master": {
-      jobPostings: 50,
-      featuredJobs: 10,
-      jobDisplayDays: 60,
-      emailSupport: true,
-      employeeManagement: true,
-      hrFeatures: true
-    }
   };
 
   // Load cart data
@@ -183,17 +155,6 @@ export default function CartPage() {
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
-    
-    // Clear promo if applied when changing quantity
-    if (promoApplied) {
-      setPromoApplied(false);
-      setAppliedPromoDetails(null);
-      setPromoMessage({
-        type: "error",
-        text: "Promo code removed due to quantity change"
-      });
-      setTimeout(() => setPromoMessage(null), 3000);
-    }
   };
 
   const updateBillingType = (id: string, newBilling: "monthly" | "yearly") => {
@@ -218,6 +179,7 @@ export default function CartPage() {
     // Clear promo if applied when changing billing
     if (promoApplied) {
       setPromoApplied(false);
+      setPromoDiscount(0);
       setAppliedPromoDetails(null);
       setPromoMessage({
         type: "error",
@@ -239,6 +201,7 @@ export default function CartPage() {
       
       if (!promoPlanStillExists || remainingItems.length === 0) {
         setPromoApplied(false);
+        setPromoDiscount(0);
         setAppliedPromoDetails(null);
       }
     }
@@ -248,27 +211,13 @@ export default function CartPage() {
     setCartItems([]);
     localStorage.removeItem("subscriptionCart");
     setPromoApplied(false);
+    setPromoDiscount(0);
     setAppliedPromoDetails(null);
     setPromoMessage(null);
   };
 
-  const applyPromoCode = async () => {
+  const applyPromoCode = () => {
     const upperCode = promoCode.toUpperCase().trim();
-    
-    if (!upperCode) {
-      setPromoMessage({
-        type: "error",
-        text: "Please enter a promo code"
-      });
-      setTimeout(() => setPromoMessage(null), 3000);
-      return;
-    }
-
-    setApplyingPromo(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
     const promoConfig = promoCodes[upperCode];
     
     if (!promoConfig) {
@@ -276,7 +225,6 @@ export default function CartPage() {
         type: "error",
         text: "Invalid promo code"
       });
-      setApplyingPromo(false);
       setTimeout(() => setPromoMessage(null), 3000);
       return;
     }
@@ -289,7 +237,6 @@ export default function CartPage() {
         type: "error",
         text: `This promo code is for ${promoConfig.plan} plan only. Please add it to your cart first.`
       });
-      setApplyingPromo(false);
       setTimeout(() => setPromoMessage(null), 3000);
       return;
     }
@@ -300,13 +247,13 @@ export default function CartPage() {
         type: "error",
         text: "Only one promo code can be applied at a time"
       });
-      setApplyingPromo(false);
       setTimeout(() => setPromoMessage(null), 3000);
       return;
     }
 
     // Apply the promo
     setPromoApplied(true);
+    setPromoDiscount(promoConfig.discount);
     setAppliedPromoDetails(promoConfig);
     setPromoMessage({
       type: "success",
@@ -315,7 +262,6 @@ export default function CartPage() {
     
     // Clear the input
     setPromoCode("");
-    setApplyingPromo(false);
     
     // Auto-hide message after 5 seconds
     setTimeout(() => setPromoMessage(null), 5000);
@@ -340,7 +286,7 @@ export default function CartPage() {
   const tax = subtotal * 0.18; // 18% GST only on non-promo items
   const total = subtotal + tax;
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user) {
       router.push("/auth/login?redirect=cart");
       return;
@@ -352,50 +298,20 @@ export default function CartPage() {
       return;
     }
 
-    // If promo is applied and total is zero
-    if (promoApplied && total === 0 && appliedPromoDetails) {
-      try {
-        // Here you would typically make an API call to activate the subscription
-        // For now, we'll simulate it
-        setLoading(true);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Get the plan details
-        const planName = appliedPromoDetails.plan;
-        const planPerk = planPerks[planName as keyof typeof planPerks];
-        
-        // Store subscription info in localStorage (temporary until backend is ready)
-        const subscriptionData = {
-          plan: planName,
-          status: "active",
-          perks: planPerk,
-          activatedAt: new Date().toISOString(),
-          promoCode: true
-        };
-        
-        localStorage.setItem("activeSubscription", JSON.stringify(subscriptionData));
-        
-        // Clear the cart
-        localStorage.removeItem("subscriptionCart");
-        
-        // Show success message with perks
-        alert(`🎉 Your ${planName} subscription has been activated!\n\nYou can now post up to ${planPerk.jobPostings} jobs with ${planPerk.featuredJobs} featured jobs.`);
-        
-        // Redirect to post job page
-        router.push("/employer/post-job");
-        
-      } catch (error) {
-        console.error("Error activating subscription:", error);
-        alert("Failed to activate subscription. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+    // If total is zero (all items free), redirect to post job page
+    if (total === 0) {
+      // Clear the cart since it's been "purchased"
+      localStorage.removeItem("subscriptionCart");
+      
+      // Show success message
+      alert("🎉 Your free subscription has been activated! You can now post jobs.");
+      
+      // Redirect to post job page
+      router.push("/employer/post-job");
       return;
     }
     
-    // For non-zero totals, show payment gateway message
+    // For non-zero totals, show payment gateway message (to be implemented later)
     alert("Payment gateway will be integrated soon. For now, please use a promo code for free access.");
   };
 
@@ -420,12 +336,18 @@ export default function CartPage() {
     return 0;
   };
 
+  // Get display name for promo code (masked for security)
+  const getMaskedPromoCode = (code: string) => {
+    if (code.length <= 4) return code;
+    return `${code.slice(0, 2)}...${code.slice(-2)}`;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-24 pb-12 flex justify-center items-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Processing...</p>
+          <p className="mt-4 text-gray-600">Loading cart...</p>
         </div>
       </div>
     );
@@ -460,6 +382,18 @@ export default function CartPage() {
               : "bg-red-50 border border-red-200 text-red-800"
           }`}>
             {promoMessage.text}
+          </div>
+        )}
+
+        {/* Payment Gateway Notice */}
+        {total > 0 && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+            <div className="flex items-center">
+              <Lock className="h-5 w-5 text-yellow-600 mr-3" />
+              <p className="text-yellow-800">
+                <span className="font-medium">Payment Gateway Coming Soon:</span> For now, you can only proceed with free plans using promo codes. Paid plans will be available once we integrate the payment system.
+              </p>
+            </div>
           </div>
         )}
 
@@ -706,18 +640,14 @@ export default function CartPage() {
                     />
                     <button
                       onClick={applyPromoCode}
-                      disabled={promoApplied || !promoCode || applyingPromo}
-                      className={`px-4 py-2 rounded-lg font-medium transition ${
-                        promoApplied || !promoCode || applyingPromo
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "bg-gray-900 text-white hover:bg-gray-800"
-                      }`}
+                      disabled={promoApplied || !promoCode}
+                      className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {applyingPromo ? "Applying..." : "Apply"}
+                      Apply
                     </button>
                   </div>
                   
-                  {/* Available Promo Codes Info */}
+                  {/* Available Promo Codes Info - Show only that promos exist, not the actual codes */}
                   {!promoApplied && Object.keys(promoCodes).length > 0 && (
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                       <p className="text-xs font-medium text-blue-800 mb-2">Promo Codes Available:</p>
@@ -735,6 +665,9 @@ export default function CartPage() {
                           Free HR Master
                         </p>
                       </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Contact your administrator for promo codes
+                      </p>
                     </div>
                   )}
                   
@@ -842,27 +775,24 @@ export default function CartPage() {
                 {/* Checkout Button */}
                 <button
                   onClick={handleCheckout}
-                  disabled={cartItems.length === 0 || (total > 0 && !promoApplied)}
+                  disabled={total > 0} // Disable if total is greater than 0
                   className={`w-full py-4 rounded-xl font-medium mb-4 flex items-center justify-center transition ${
-                    cartItems.length === 0 || (total > 0 && !promoApplied)
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : total === 0 && promoApplied
+                    total === 0
                       ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-                      : "bg-red-700 hover:bg-red-800 text-white cursor-pointer"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
+                  title={total > 0 ? "Payment gateway coming soon. Use promo code for free access." : ""}
                 >
-                  {total === 0 && promoApplied ? (
+                  {total === 0 ? (
                     <>
                       <Gift className="w-5 h-5 mr-2" />
                       Activate Free Subscription
                     </>
-                  ) : total > 0 && !promoApplied ? (
+                  ) : (
                     <>
                       <Lock className="w-5 h-5 mr-2" />
                       Payment Gateway Coming Soon
                     </>
-                  ) : (
-                    "Proceed to Checkout"
                   )}
                 </button>
 
