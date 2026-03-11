@@ -55,7 +55,7 @@ export default function FAQPage() {
       },
       {
         question: "How do I apply for jobs?",
-        answer: "To apply for jobs:\n1. Upload a professional photo (this is an important feature not available but required)\n2. Click on a job posting to view details\n3. Click 'Apply Now'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
+        answer: "To apply for jobs:\n1. Upload a professional photo \n2. Click on a job posting to view details\n3. Click 'Apply Now'\n4. Follow the application instructions\n5. Track your applications in your dashboard\n\nYou can apply to multiple jobs simultaneously."
       },
       {
         question: "Can I track my job applications?",
@@ -73,7 +73,7 @@ export default function FAQPage() {
       },
       {
         question: "What are the subscription plans for employers?",
-        answer: "All paid plans include a 7-day free trial (please check whether the code exists for this). Currently, only the basic plan is being offered, premium plans shall be added in due course."
+        answer: "All paid plans include a 7-day free trial. Currently, only the basic plan is being offered, premium plans shall be added in due course."
       },
       {
         question: "How do I manage applications received?",
