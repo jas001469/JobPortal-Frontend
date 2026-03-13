@@ -63,12 +63,21 @@ export default function CartPage() {
     "Premium": { monthly: 249, yearly: 2390 },
   };
 
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem("subscriptionCart", JSON.stringify(cartItems));
+    }
+  }, [cartItems, loading]);
+
   // Load cart data
   useEffect(() => {
     loadCartData();
     
-    const handleStorageChange = () => {
-      loadCartData();
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "subscriptionCart") {
+        loadCartData();
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -85,7 +94,20 @@ export default function CartPage() {
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
         if (Array.isArray(parsedCart)) {
-          setCartItems(parsedCart);
+          // Validate and fix cart items if needed
+          const validatedCart = parsedCart.map(item => {
+            // Ensure price matches the billing type
+            const pricing = planPricing[item.name as keyof typeof planPricing];
+            if (pricing) {
+              const correctPrice = item.billing === "yearly" ? pricing.yearly : pricing.monthly;
+              // If price doesn't match, update it
+              if (item.price !== correctPrice) {
+                return { ...item, price: correctPrice };
+              }
+            }
+            return item;
+          });
+          setCartItems(validatedCart);
         } else {
           setCartItems([]);
         }
@@ -143,9 +165,7 @@ export default function CartPage() {
             return {
               ...item,
               billing: newBilling,
-              price: newBilling === "yearly" 
-                ? Math.round(pricing.yearly / 12) 
-                : pricing.monthly
+              price: newBilling === "yearly" ? pricing.yearly : pricing.monthly
             };
           }
         }
@@ -291,6 +311,7 @@ export default function CartPage() {
         credentials: 'include',
         body: JSON.stringify({
           planName: appliedPromoDetails.plan,
+          billingType: cartItems.find(item => item.name === appliedPromoDetails.plan)?.billing || "monthly",
           promoCode: Object.keys(PROMO_CODES).find(
             key => PROMO_CODES[key] === appliedPromoDetails
           )
@@ -302,6 +323,7 @@ export default function CartPage() {
       if (data.success) {
         // Clear the cart
         localStorage.removeItem("subscriptionCart");
+        setCartItems([]);
         
         // Show success message
         alert(`🎉 Your ${appliedPromoDetails.plan} subscription has been activated!`);
@@ -326,6 +348,46 @@ export default function CartPage() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  const getDisplayPrice = (item: CartItem) => {
+    if (item.billing === "yearly") {
+      return {
+        total: item.price * item.quantity,
+        perMonth: Math.round((item.price / 12) * item.quantity),
+        label: "year"
+      };
+    } else {
+      return {
+        total: item.price * item.quantity,
+        perMonth: item.price * item.quantity,
+        label: "month"
+      };
+    }
+  };
+
+  // Helper functions for billing period display
+  const getBillingPeriod = () => {
+    if (cartItems.length === 0) return "month";
+    
+    // Check if all items have the same billing type
+    const allYearly = cartItems.every(item => item.billing === "yearly");
+    const allMonthly = cartItems.every(item => item.billing === "monthly");
+    
+    if (allYearly) {
+      return "year";
+    } else if (allMonthly) {
+      return "month";
+    } else {
+      return "mixed";
+    }
+  };
+
+  const getBillingLabel = () => {
+    const period = getBillingPeriod();
+    if (period === "year") return "Annual";
+    if (period === "month") return "Monthly";
+    return "Mixed Billing";
   };
 
   if (loading || activating) {
@@ -401,6 +463,7 @@ export default function CartPage() {
               {cartItems.map((item) => {
                 const pricing = planPricing[item.name as keyof typeof planPricing];
                 const isPromoPlan = promoApplied && appliedPromoDetails && item.name === appliedPromoDetails.plan;
+                const displayPrice = getDisplayPrice(item);
                 
                 return (
                   <div
@@ -472,11 +535,11 @@ export default function CartPage() {
                                 </span>
                                 <span className="block font-medium text-gray-900">Annual</span>
                                 <span className="text-lg font-bold text-gray-900">
-                                  {formatPrice(Math.round(pricing.yearly / 12))}
+                                  {formatPrice(pricing.yearly)}
                                 </span>
-                                <span className="text-xs text-gray-500">/month</span>
+                                <span className="text-xs text-gray-500">/year</span>
                                 <span className="block text-xs text-gray-500 mt-1">
-                                  {formatPrice(pricing.yearly)}/year
+                                  ({formatPrice(Math.round(pricing.yearly / 12))}/month)
                                 </span>
                                 {item.billing === "yearly" && (
                                   <span className="block text-xs text-green-600 mt-1">Selected</span>
@@ -544,17 +607,26 @@ export default function CartPage() {
                                   <span className="text-2xl font-bold text-green-600">
                                     {formatPrice(0)}
                                   </span>
-                                  <span className="text-sm text-gray-500 ml-1">/mo</span>
+                                  <span className="text-sm text-gray-500 ml-1">
+                                    /{item.billing === "yearly" ? "year" : "month"}
+                                  </span>
                                   <div className="text-xs text-gray-400 line-through">
-                                    {formatPrice(item.price * item.quantity)}/mo
+                                    {formatPrice(displayPrice.total)}/{displayPrice.label}
                                   </div>
                                 </>
                               ) : (
                                 <>
                                   <span className="text-2xl font-bold text-gray-900">
-                                    {formatPrice(item.price * item.quantity)}
+                                    {formatPrice(displayPrice.total)}
                                   </span>
-                                  <span className="text-sm text-gray-500 ml-1">/mo</span>
+                                  <span className="text-sm text-gray-500 ml-1">
+                                    /{displayPrice.label}
+                                  </span>
+                                  {item.billing === "yearly" && (
+                                    <div className="text-xs text-gray-500">
+                                      ({formatPrice(displayPrice.perMonth)}/month)
+                                    </div>
+                                  )}
                                 </>
                               )}
                             </div>
@@ -611,26 +683,6 @@ export default function CartPage() {
                     </button>
                   </div>
                   
-                  {/* {!promoApplied && (
-                    <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                      <p className="text-xs font-medium text-blue-800 mb-2">Available Promo Codes:</p>
-                      <div className="space-y-1">
-                        <p className="text-xs text-blue-700 flex items-center">
-                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                          <span className="font-mono bg-white px-1.5 py-0.5 rounded mr-2">EDTRELLISBASIC</span> - Free Recruit Basic
-                        </p>
-                        <p className="text-xs text-blue-700 flex items-center">
-                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                          <span className="font-mono bg-white px-1.5 py-0.5 rounded mr-2">EDTRELLISPRO</span> - Free Talent Pro
-                        </p>
-                        <p className="text-xs text-blue-700 flex items-center">
-                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                          <span className="font-mono bg-white px-1.5 py-0.5 rounded mr-2">EDTRELLISMASTER</span> - Free HR Master
-                        </p>
-                      </div>
-                    </div>
-                  )} */}
-                  
                   {promoApplied && appliedPromoDetails && (
                     <div className="mt-3 p-3 bg-green-50 rounded-lg">
                       <p className="text-sm font-medium text-green-800 flex items-center">
@@ -646,6 +698,8 @@ export default function CartPage() {
                   <h3 className="text-sm font-medium text-gray-700 mb-3">Billing Summary</h3>
                   {cartItems.map((item) => {
                     const isPromoPlan = promoApplied && appliedPromoDetails && item.name === appliedPromoDetails.plan;
+                    const displayPrice = getDisplayPrice(item);
+                    
                     return (
                       <div key={item.id} className="flex justify-between text-sm text-gray-600 mb-2">
                         <span className="flex items-center">
@@ -664,19 +718,41 @@ export default function CartPage() {
                         {isPromoPlan ? (
                           <span className="text-green-600 font-medium">FREE</span>
                         ) : (
-                          <span>{formatPrice(item.price * item.quantity)}/mo</span>
+                          <span>{formatPrice(displayPrice.total)}/{displayPrice.label}</span>
                         )}
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Price Breakdown */}
+                {/* Price Breakdown - Updated to show annual billing */}
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
-                    <span>Subtotal</span>
-                    <span>{formatPrice(subtotal)}/mo</span>
+                    <span>Subtotal ({getBillingLabel()})</span>
+                    <div className="text-right">
+                      <span>{formatPrice(subtotal)}</span>
+                      {getBillingPeriod() !== "mixed" && (
+                        <span className="text-sm text-gray-500 ml-1">
+                          /{getBillingPeriod()}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  
+                  {getBillingPeriod() === "mixed" && (
+                    <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg space-y-2">
+                      <p className="font-medium text-gray-700">Your cart contains:</p>
+                      {cartItems.map(item => {
+                        const displayPrice = getDisplayPrice(item);
+                        return (
+                          <div key={item.id} className="flex justify-between">
+                            <span>{item.name} x{item.quantity}:</span>
+                            <span>{formatPrice(displayPrice.total)}/{displayPrice.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                   
                   <div className="flex justify-between text-gray-600">
                     <span>GST (18%)</span>
@@ -685,10 +761,17 @@ export default function CartPage() {
                   
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-lg font-bold text-gray-900">
-                      <span>Total (Monthly)</span>
-                      <span className={total === 0 ? "text-green-600" : ""}>
-                        {formatPrice(total)}/mo
-                      </span>
+                      <span>Total ({getBillingLabel()})</span>
+                      <div className="text-right">
+                        <span className={total === 0 ? "text-green-600" : ""}>
+                          {formatPrice(total)}
+                        </span>
+                        {getBillingPeriod() !== "mixed" && (
+                          <span className={`text-sm ml-1 ${total === 0 ? "text-green-600" : "text-gray-500"}`}>
+                            /{getBillingPeriod()}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
                       Including all taxes
@@ -744,7 +827,6 @@ export default function CartPage() {
     </div>
   );
 }
-
 // "use client";
 
 // import { useState, useEffect } from "react";
