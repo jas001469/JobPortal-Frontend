@@ -1393,7 +1393,7 @@ const PLAN_LIMITS = {
     hrFeatures: false,
   },
   "Talent Pro": {
-    jobPostings: 3,
+    jobPostings: 40,
     featuredJobs: 5,
     jobDisplayDays: 30,
     emailSupport: true,
