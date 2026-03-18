@@ -53,7 +53,7 @@ export default function ContactPage() {
       icon: Mail,
       title: "Email Support",
       details: "support@edtrellis.com",
-      description: "Response within 24 hours",
+      description: "Response within 72 hours",
       color: "bg-blue-50",
       iconColor: "text-blue-600",
     },
