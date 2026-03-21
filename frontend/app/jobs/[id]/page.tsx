@@ -374,7 +374,8 @@ export default function JobDetailsPage() {
                       <div className="flex items-center">
                         <Briefcase className="h-5 w-5 text-gray-500 mr-3" />
                         <div>
-                          <p className="font-medium text-gray-900">Application Link</p>
+                          <p className="font-medium text-gray-900">Institute Website
+</p>
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {job.applicationLink}
                           </p>
@@ -396,7 +397,8 @@ export default function JobDetailsPage() {
                       <div className="flex items-center">
                         <Globe className="h-5 w-5 text-gray-500 mr-3" />
                         <div>
-                          <p className="font-medium text-gray-900">Company Website</p>
+                          <p className="font-medium text-gray-900">Detailed Advertisement
+</p>
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {job.companyWebsite}
                           </p>
@@ -418,7 +420,7 @@ export default function JobDetailsPage() {
                       <div className="flex items-center">
                         <FileText className="h-5 w-5 text-gray-500 mr-3" />
                         <div>
-                          <p className="font-medium text-gray-900">Job Reference</p>
+                          <p className="font-medium text-gray-900">Application</p>
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {job.jobReferenceLink}
                           </p>
@@ -469,14 +471,14 @@ export default function JobDetailsPage() {
                   <span className="text-gray-600">Category</span>
                   <span className="font-medium">{job.category || "Not specified"}</span>
                 </div>
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-gray-600">Experience</span>
                   <span className="font-medium">{job.experience}</span>
-                </div>
-                <div className="flex justify-between">
+                </div> */}
+                {/* <div className="flex justify-between">
                   <span className="text-gray-600">Education</span>
                   <span className="font-medium">{job.education}</span>
-                </div>
+                </div> */}
                 {/* Show deadline in summary if exists and is valid */}
                 {isValidDeadline(job.deadline) && (
                   <div className="flex justify-between">
