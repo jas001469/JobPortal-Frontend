@@ -11,7 +11,8 @@ import {
   Calendar,
   Link as LinkIcon,
   IndianRupee,
-  CheckCircle
+  CheckCircle,
+  Building2
 } from "lucide-react";
 
 interface Job {
@@ -64,7 +65,6 @@ export default function JobDetailsPage() {
 
       if (data.success) {
         setJob(data.job);
-        // Debug: Check what data we're receiving
         console.log("Job Details Data:", data.job);
         console.log("Deadline from API:", data.job.deadline);
         console.log("Deadline type:", typeof data.job.deadline);
@@ -88,7 +88,6 @@ export default function JobDetailsPage() {
         const data = await response.json();
         if (data.success) {
           setUser(data.user);
-          // If user is a candidate, check if they've already applied
           if (data.user.role === "CANDIDATE") {
             checkIfApplied();
           } else {
@@ -136,11 +135,9 @@ export default function JobDetailsPage() {
       return;
     }
 
-    // Redirect to confirmation page
     router.push(`/jobs/confirm-apply/${params.id}`);
   };
 
-  // Format date - Fixed to handle invalid dates
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "No date specified";
     
@@ -159,7 +156,6 @@ export default function JobDetailsPage() {
     }
   };
 
-  // Calculate days remaining - Fixed to handle null/undefined
   const getDaysRemaining = (deadline: string | null) => {
     if (!deadline) return null;
     
@@ -167,7 +163,6 @@ export default function JobDetailsPage() {
       const today = new Date();
       const deadlineDate = new Date(deadline);
       
-      // Check if date is valid
       if (isNaN(deadlineDate.getTime())) return null;
       
       const diffTime = deadlineDate.getTime() - today.getTime();
@@ -183,7 +178,6 @@ export default function JobDetailsPage() {
     }
   };
 
-  // Check if deadline is valid
   const isValidDeadline = (deadline: string | null) => {
     if (!deadline) return false;
     try {
@@ -192,6 +186,57 @@ export default function JobDetailsPage() {
     } catch {
       return false;
     }
+  };
+
+  // Format skills array into a readable paragraph
+  const formatSkillsAsParagraph = (skills: string[]) => {
+    if (!skills || skills.length === 0) return "Not specified";
+    
+    // Join skills with proper punctuation
+    if (skills.length === 1) return skills[0];
+    if (skills.length === 2) return `${skills[0]} and ${skills[1]}`;
+    
+    // For 3 or more skills, use commas and "and" before the last
+    const allExceptLast = skills.slice(0, -1).join(", ");
+    return `${allExceptLast}, and ${skills[skills.length - 1]}`;
+  };
+
+  // Format description with proper paragraph structure
+  const formatDescription = (description: string) => {
+    if (!description) return "No description provided.";
+    
+    // If there are line breaks, preserve them
+    if (description.includes('\n')) {
+      const lines = description.split('\n');
+      return lines.map((line, index) => {
+        if (line.trim() === '') return <br key={index} />;
+        return <p key={index} className="text-gray-700 mb-3">{line}</p>;
+      });
+    }
+    
+    // If no line breaks, split by sentences and create paragraphs
+    const sentences = description.split(/(?<=[.!?])\s+/);
+    const paragraphs: string[] = [];
+    let currentParagraph = "";
+    
+    for (let i = 0; i < sentences.length; i++) {
+      const sentence = sentences[i].trim();
+      if (!sentence) continue;
+      
+      currentParagraph += (currentParagraph ? " " : "") + sentence;
+      
+      // Create new paragraph after every 3-4 sentences
+      if ((i + 1) % 3 === 0 || i === sentences.length - 1) {
+        if (currentParagraph) {
+          paragraphs.push(currentParagraph);
+          currentParagraph = "";
+        }
+      }
+    }
+    
+    return paragraphs.map((paragraph, index) => (
+      <p key={index} className="text-gray-700 mb-4">{paragraph}</p>
+    ));
   };
 
   if (loading) {
@@ -293,7 +338,7 @@ export default function JobDetailsPage() {
             </div>
           </div>
 
-          {/* Deadline Section - Only show if deadline exists and is valid */}
+          {/* Deadline Section */}
           {isValidDeadline(job.deadline) && (
             <div className="mb-6 p-4 border rounded-lg">
               <div className="flex items-center justify-between">
@@ -324,14 +369,6 @@ export default function JobDetailsPage() {
             <span className="inline-block px-4 py-2 text-sm rounded-full bg-gray-100 text-gray-700">
               {job.category}
             </span>
-            {job.skills.map((skill, index) => (
-              <span
-                key={index}
-                className="inline-block px-4 py-2 text-sm rounded-full bg-red-50 text-red-700"
-              >
-                {skill}
-              </span>
-            ))}
           </div>
         </div>
 
@@ -343,20 +380,32 @@ export default function JobDetailsPage() {
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Description</h2>
               <div className="prose max-w-none">
-                <p className="text-gray-700 whitespace-pre-line">{job.description || "No description provided."}</p>
+                <div className="text-gray-700">
+                  {formatDescription(job.description)}
+                </div>
               </div>
             </div>
 
-            {/* Requirements - Only show if requirements exist */}
+            {/* Job Profile - Now displayed as paragraph */}
+            {job.skills && job.skills.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Profile</h2>
+                <div className="text-gray-700 leading-relaxed">
+                  {formatSkillsAsParagraph(job.skills)}
+                </div>
+              </div>
+            )}
+
+            {/* Requirements */}
             {job.requirements && job.requirements.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Requirements</h2>
                 <ul className="space-y-3">
                   {job.requirements.map((req, index) => (
                     <li key={index} className="flex items-start">
-                      <svg className="w-5 h-5 text-red-700 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      {/* <svg className="w-5 h-5 text-red-700 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
+                      </svg> */}
                       <span className="text-gray-700">{req}</span>
                     </li>
                   ))}
@@ -364,7 +413,7 @@ export default function JobDetailsPage() {
               </div>
             )}
 
-            {/* Additional Links - Only show if any link exists */}
+            {/* Additional Links */}
             {(job.applicationLink || job.companyWebsite || job.jobReferenceLink) && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Links</h2>
@@ -374,8 +423,7 @@ export default function JobDetailsPage() {
                       <div className="flex items-center">
                         <Briefcase className="h-5 w-5 text-gray-500 mr-3" />
                         <div>
-                          <p className="font-medium text-gray-900">Institute Website
-</p>
+                          <p className="font-medium text-gray-900">Institute Website</p>
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {job.applicationLink}
                           </p>
@@ -397,8 +445,7 @@ export default function JobDetailsPage() {
                       <div className="flex items-center">
                         <Globe className="h-5 w-5 text-gray-500 mr-3" />
                         <div>
-                          <p className="font-medium text-gray-900">Detailed Advertisement
-</p>
+                          <p className="font-medium text-gray-900">Detailed Advertisement</p>
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {job.companyWebsite}
                           </p>
@@ -443,20 +490,32 @@ export default function JobDetailsPage() {
 
           {/* Right Column - Company Info */}
           <div className="space-y-6">
-            {/* About Employer */}
+            {/* About Institute */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">About Employer</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">About Institute</h3>
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-4">
-                  <span className="text-red-700 font-bold text-lg">
-                    {job.employer.name.charAt(0).toUpperCase()}
-                  </span>
+                  <Building2 className="w-6 h-6 text-red-700" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{job.employer.name}</p>
-                  <p className="text-sm text-gray-500">{job.employer.email}</p>
+                  <p className="font-medium text-gray-900 text-lg">{job.company}</p>
+                  <p className="text-sm text-gray-500">Educational Institute</p>
                 </div>
               </div>
+              {job.companyWebsite && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <a
+                    href={job.companyWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-red-700 hover:text-red-800 text-sm font-medium"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    Visit Institute Website
+                    <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Job Summary */}
@@ -464,25 +523,20 @@ export default function JobDetailsPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-4">Job Summary</h3>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Job Type</span>
-                  <span className="font-medium">{job.type || "Not specified"}</span>
+                  <span className="text-gray-900">Job Type</span>
+                  <span className="font-medium text-gray-400">{job.type || "Not specified"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Category</span>
-                  <span className="font-medium">{job.category || "Not specified"}</span>
+                  <span className="text-gray-900">Category</span>
+                  <span className="font-medium text-gray-400">{job.category || "Not specified"}</span>
                 </div>
-                {/* <div className="flex justify-between">
-                  <span className="text-gray-600">Experience</span>
-                  <span className="font-medium">{job.experience}</span>
-                </div> */}
-                {/* <div className="flex justify-between">
-                  <span className="text-gray-600">Education</span>
-                  <span className="font-medium">{job.education}</span>
-                </div> */}
-                {/* Show deadline in summary if exists and is valid */}
+                <div className="flex justify-between">
+                  <span className="text-gray-900">Education</span>
+                  <span className="font-medium text-gray-400 ">{job.education}</span>
+                </div>
                 {isValidDeadline(job.deadline) && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Deadline</span>
+                    <span className="text-gray-900">Deadline</span>
                     <span className="font-medium text-red-700">
                       {formatDate(job.deadline)}
                     </span>

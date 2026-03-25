@@ -847,7 +847,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -1205,7 +1204,8 @@ export default function EditJobPage() {
           category: job.category || "",
           description: job.description || "",
           requirements: Array.isArray(job.requirements) ? job.requirements.join("\n") : job.requirements || "",
-          skills: Array.isArray(job.skills) ? job.skills.join(", ") : job.skills || "",
+          // Join skills with newline for textarea display
+          skills: Array.isArray(job.skills) ? job.skills.join("\n") : job.skills || "",
           experience: job.experience || "0-1 years",
           education: job.education || "Any",
           deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : "",
@@ -1339,7 +1339,8 @@ export default function EditJobPage() {
         category: form.category,
         description: form.description,
         requirements: form.requirements.split("\n").filter(r => r.trim() !== ""),
-        skills: form.skills.split(",").map(s => s.trim()).filter(s => s !== ""),
+        // Split skills by newline (for textarea) instead of comma
+        skills: form.skills.split("\n").map(s => s.trim()).filter(s => s !== ""),
         experience: form.experience,
         education: form.education,
         deadline: form.deadline ? new Date(form.deadline) : null,
@@ -1691,7 +1692,7 @@ export default function EditJobPage() {
                     />
                   </div>
 
-                  {/* <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Experience Required *
                     </label>
@@ -1707,9 +1708,9 @@ export default function EditJobPage() {
                       <option value="3-5 years">3-5 years</option>
                       <option value="5+ years">5+ years</option>
                     </select>
-                  </div> */}
+                  </div>
 
-                  {/* <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Education Required *
                     </label>
@@ -1727,9 +1728,9 @@ export default function EditJobPage() {
                       <option value="Master's">Master's</option>
                       <option value="PhD">PhD</option>
                     </select>
-                  </div> */}
+                  </div>
 
-                  {/* <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Job Status
                     </label>
@@ -1743,7 +1744,7 @@ export default function EditJobPage() {
                       <option value="Closed">Closed</option>
                       <option value="Draft">Draft</option>
                     </select>
-                  </div> */}
+                  </div>
                 </div>
 
                 <div className="flex justify-between pt-6 border-t border-gray-200">
@@ -1805,7 +1806,7 @@ export default function EditJobPage() {
                     onChange={handleChange}
                     rows={4}
                     className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    placeholder=""
+                    placeholder="Enter each requirement on a new line"
                   />
                 </div>
 
@@ -1814,14 +1815,17 @@ export default function EditJobPage() {
                     <Tag className="h-4 w-4 mr-2 text-gray-900" />
                     Job Profile
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     name="skills"
                     value={form.skills}
                     onChange={handleChange}
+                    rows={4}
                     className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                    placeholder=""
+                    placeholder="Enter job profile details "
                   />
+                  {/* <p className="text-xs text-gray-500 mt-1">
+                    Each line will be treated as a separate skill/requirement
+                  </p> */}
                 </div>
 
                 <div className="flex justify-between pt-6 border-t border-gray-200">

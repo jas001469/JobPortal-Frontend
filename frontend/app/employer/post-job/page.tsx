@@ -2559,19 +2559,22 @@ export default function PostJobPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2 flex items-center">
-                      <Tag className="h-4 w-4 mr-2 text-gray-900" />
-                      Job Profile
-                    </label>
-                    <input
-                      type="text"
-                      name="skills"
-                      value={form.skills}
-                      onChange={handleChange}
-                      className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
-                      placeholder=""
-                    />
-                  </div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2 flex items-center">
+                    <Tag className="h-4 w-4 mr-2 text-gray-900" />
+                    Job Profile
+                  </label>
+                  <textarea
+                    name="skills"
+                    value={form.skills}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full border text-gray-900 border-gray-300 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                    placeholder="Enter job profile details "
+                  />
+                  {/* <p className="text-xs text-gray-500 mt-1">
+                    Each line will be treated as a separate skill/requirement
+                  </p> */}
+                </div>
 
                   <div className="flex justify-between pt-6 border-t border-gray-200">
                     <button
