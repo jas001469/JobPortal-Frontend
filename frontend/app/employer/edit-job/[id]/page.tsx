@@ -1692,7 +1692,7 @@ export default function EditJobPage() {
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Experience Required *
                     </label>
@@ -1708,9 +1708,9 @@ export default function EditJobPage() {
                       <option value="3-5 years">3-5 years</option>
                       <option value="5+ years">5+ years</option>
                     </select>
-                  </div>
+                  </div> */}
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
                       Education Required *
                     </label>
@@ -1728,7 +1728,7 @@ export default function EditJobPage() {
                       <option value="Master's">Master's</option>
                       <option value="PhD">PhD</option>
                     </select>
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -1760,7 +1760,7 @@ export default function EditJobPage() {
                     disabled={!validateCurrentTab()}
                     className="bg-red-700 text-white px-6 py-3 rounded-full font-medium hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Next: Job Description
+                    Next: Eligibility
                     <ChevronRight className="w-4 h-4 inline ml-2" />
                   </button>
                 </div>
@@ -1835,7 +1835,7 @@ export default function EditJobPage() {
                     className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
                   >
                     <ChevronRight className="w-4 h-4 inline mr-2 rotate-180" />
-                    Back to Basic Info
+                    Back to Job Details
                   </button>
                   <button
                     type="button"
@@ -1968,7 +1968,7 @@ export default function EditJobPage() {
                     className="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
                   >
                     <ChevronRight className="w-4 h-4 inline mr-2 rotate-180" />
-                    Back to Job Description
+                    Back to Eligibility
                   </button>
                   <div className="flex space-x-3">
                     <Link

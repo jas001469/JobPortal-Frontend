@@ -378,7 +378,7 @@ export default function JobDetailsPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Job Description */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Description</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Qualification and Experience</h2>
               <div className="prose max-w-none">
                 <div className="text-gray-700">
                   {formatDescription(job.description)}
@@ -416,7 +416,7 @@ export default function JobDetailsPage() {
             {/* Additional Links */}
             {(job.applicationLink || job.companyWebsite || job.jobReferenceLink) && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Links</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Important Links</h2>
                 <div className="space-y-4">
                   {job.applicationLink && (
                     <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition">
