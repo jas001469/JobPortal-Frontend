@@ -315,14 +315,14 @@ export default function JobDetailsPage() {
                 {job.salary}
               </p>
             </div>
-            <div>
+            {/* <div>
               <p className="text-sm text-gray-500 mb-1">Experience</p>
               <p className="font-medium text-gray-900">{job.experience}</p>
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <p className="text-sm text-gray-500 mb-1">Education</p>
               <p className="font-medium text-gray-900">{job.education}</p>
-            </div>
+            </div> */}
           </div>
 
           {/* Deadline Section */}
@@ -518,10 +518,10 @@ export default function JobDetailsPage() {
                   <span className="text-gray-900">Category</span>
                   <span className="font-medium text-gray-400">{job.category || "Not specified"}</span>
                 </div>
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-gray-900">Education</span>
                   <span className="font-medium text-gray-400 ">{job.education}</span>
-                </div>
+                </div> */}
                 {isValidDeadline(job.deadline) && (
                   <div className="flex justify-between">
                     <span className="text-gray-900">Deadline</span>

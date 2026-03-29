@@ -17,8 +17,11 @@ import {
   User,
   Building2,
   GraduationCap,
+  ExternalLink,
+   Globe,
   Award
 } from "lucide-react";
+
 
 interface Job {
   _id: string;
@@ -427,14 +430,14 @@ export default function ConfirmApplyPage() {
                   <p className="text-sm text-gray-500 mb-1">Category</p>
                   <p className="text-gray-800">{job.category}</p>
                 </div>
-                <div>
+                {/* <div>
                   <p className="text-sm text-gray-500 mb-1">Experience Required</p>
                   <p className="text-gray-800">{job.experience}</p>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <p className="text-sm text-gray-500 mb-1">Education Required</p>
                   <p className="text-gray-800">{job.education}</p>
-                </div>
+                </div> */}
                 {job.deadline && (
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Application Deadline</p>
@@ -447,7 +450,7 @@ export default function ConfirmApplyPage() {
               </div>
 
               {/* Skills */}
-              {job.skills && job.skills.length > 0 && (
+              {/* {job.skills && job.skills.length > 0 && (
                 <div className="mt-6">
                   <p className="text-sm text-gray-500 mb-2">Required Skills</p>
                   <div className="flex flex-wrap gap-2">
@@ -461,37 +464,52 @@ export default function ConfirmApplyPage() {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
+              {job.skills && job.skills.length > 0 && (
+              <div className="bg-white mt-10 rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-5">Job Profile</h2>
+                <ul className="space-y-1 list-disc pl-5">
+                  {job.skills.map((skill, index) => (
+                    <li key={index} className="text-gray-700">
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             </div>
           </div>
 
           {/* Employer Information Section */}
-          <div className="mb-10">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <Building2 className="h-6 w-6 text-red-700 mr-2" />
-              Employer Information
-            </h2>
-            
-            <div className="bg-gray-50 rounded-xl p-6">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">About Institute</h3>
               <div className="flex items-center mb-4">
-                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mr-4">
-                  <span className="text-red-700 font-bold text-2xl">
-                    {job.employer.name.charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-4">
+                  <Building2 className="w-6 h-6 text-red-700" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-lg">{job.employer.name}</p>
-                  <p className="text-gray-600 flex items-center mt-1">
-                    <Mail className="w-4 h-4 text-gray-400 mr-2" />
-                    {job.employer.email}
-                  </p>
+                  <p className="font-medium text-gray-900 text-lg">{job.company}</p>
+                  <p className="text-sm text-gray-500">Educational Institute</p>
                 </div>
               </div>
+              {job.companyWebsite && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <a
+                    href={job.companyWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-red-700 hover:text-red-800 text-sm font-medium"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    Visit Institute Website
+                    <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                </div>
+              )}
             </div>
-          </div>
 
           {/* Candidate Information Section */}
-          <div className="mb-10">
+          <div className="mt-10 mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <User className="h-6 w-6 text-red-700 mr-2" />
               Your Information

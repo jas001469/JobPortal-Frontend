@@ -521,9 +521,27 @@ export default function EmployerDashboard() {
                             </svg>
                           </div>
                           <div>
-                            <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700 transition-colors">
+                            {/* <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700 transition-colors">
                               {job.title}
-                            </div>
+                            </div> */}
+                            <div className="flex items-center gap-1.5">
+  <span className="text-sm font-semibold text-gray-900 group-hover:text-red-700 transition-colors">
+    {job.title}
+  </span>
+  <Link
+    href={`/jobs/${job._id}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="View job listing"
+    onClick={(e) => e.stopPropagation()}
+    className="text-gray-400 hover:text-red-600 transition-colors shrink-0"
+  >
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+  </Link>
+</div>
                             <div className="text-sm text-gray-500">{job.company}</div>
                           </div>
                         </div>
