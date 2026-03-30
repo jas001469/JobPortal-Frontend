@@ -188,42 +188,47 @@ export default function JobDetailsPage() {
     }
   };
 
-  // Format description with proper paragraph structure
-  const formatDescription = (description: string) => {
-    if (!description) return "No description provided.";
+  // Format description as bullet points
+  const formatDescriptionAsBullets = (description: string) => {
+    if (!description) return <p className="text-gray-700">No description provided.</p>;
     
-    // If there are line breaks, preserve them
-    if (description.includes('\n')) {
-      const lines = description.split('\n');
-      return lines.map((line, index) => {
-        if (line.trim() === '') return <br key={index} />;
-        return <p key={index} className="text-gray-700 mb-3">{line}</p>;
-      });
+    // Check if the description contains bullet points markers like •, -, *, or numbers
+    const hasBulletMarkers = /^[\s]*[•\-\*\d+\.]\s/m.test(description);
+    
+    if (hasBulletMarkers) {
+      // Split by lines and filter out empty lines
+      const lines = description.split('\n').filter(line => line.trim().length > 0);
+      const bulletPoints = lines.map(line => line.replace(/^[\s]*[•\-\*\d+\.]\s*/, '').trim());
+      
+      return (
+        <ul className="space-y-3 list-disc pl-5">
+          {bulletPoints.map((point, index) => (
+            <li key={index} className="text-gray-700">
+              {point}
+            </li>
+          ))}
+        </ul>
+      );
     }
     
-    // If no line breaks, split by sentences and create paragraphs
-    const sentences = description.split(/(?<=[.!?])\s+/);
-    const paragraphs: string[] = [];
-    let currentParagraph = "";
+    // Split by new lines, periods, or semicolons to create bullet points
+    const bulletPoints = description.split(/\n|\.\s+|;\s+/).filter(point => point.trim().length > 0);
     
-    for (let i = 0; i < sentences.length; i++) {
-      const sentence = sentences[i].trim();
-      if (!sentence) continue;
-      
-      currentParagraph += (currentParagraph ? " " : "") + sentence;
-      
-      // Create new paragraph after every 3-4 sentences
-      if ((i + 1) % 3 === 0 || i === sentences.length - 1) {
-        if (currentParagraph) {
-          paragraphs.push(currentParagraph);
-          currentParagraph = "";
-        }
-      }
+    if (bulletPoints.length === 1) {
+      // If only one point, display as regular paragraph
+      return <p className="text-gray-700">{bulletPoints[0]}</p>;
     }
     
-    return paragraphs.map((paragraph, index) => (
-      <p key={index} className="text-gray-700 mb-4">{paragraph}</p>
-    ));
+    // Display as bullet points
+    return (
+      <ul className="space-y-3 list-disc pl-5">
+        {bulletPoints.map((point, index) => (
+          <li key={index} className="text-gray-700">
+            {point.trim()}
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   if (loading) {
@@ -363,13 +368,11 @@ export default function JobDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Job Details */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Job Description */}
+            {/* Qualification and Experience with Bullet Points */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Qualification and Experience</h2>
-              <div className="prose max-w-none">
-                <div className="text-gray-700">
-                  {formatDescription(job.description)}
-                </div>
+              <div className="max-w-none">
+                {formatDescriptionAsBullets(job.description)}
               </div>
             </div>
 
